@@ -70,9 +70,6 @@ static inline int isspace(int ch)
 		case '\n':
 		case ' ':
 		case '\t':
-		case '\r':
-		case '\v':
-		case '\f':
 			return 1;
 		default:
 			return 0;
