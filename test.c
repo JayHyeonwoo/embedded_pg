@@ -4,11 +4,12 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <signal.h>
 
 #include "devinfo.h"
 #include "comm.h"
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	pthread_t receive_tid, recognizer_tid;
 	void *retval;
@@ -18,7 +19,6 @@ int main(int argc, char *argv[])
 
 	pthread_join(receive_tid, &retval);
 	pthread_join(recognizer_tid, &retval);
-
 
 	exit(0);
 }

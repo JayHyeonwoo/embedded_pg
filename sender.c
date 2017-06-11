@@ -8,45 +8,52 @@
 #include <arpa/inet.h>
 #include <pthread.h>
 #include <stdbool.h>
+#include <time.h>
 
 #include "comm.h"
 
-int main(void)
+static int self = 3;
+
+void *thr_sender(void *arg)
 {
+    struct sender_arg *sender_arg = arg;
+    struct sockaddr_in client_addr;
+    time_t send_time;
     int sock;
+
+    printf("thr_sender!\n");
     sock = socket(AF_INET, SOCK_DGRAM, 0);
     if (-1 == sock)
     {
-	printf( "socket 생성 실패");
-	exit( 1) ;
+	perror("socket error");
+	pthread_exit(NULL);
     }
 
-    broadcast_hello_packet(sock);
-
-    getchar();
-
-    braodcast_dead_packet(sock);
-
-#if 0
-    struct sockaddr_in client_addr;
     memset(&client_addr, 0, sizeof(client_addr));
     client_addr.sin_family = AF_INET;
     client_addr.sin_port = htons(RX_PORT);
-    client_addr.sin_addr.s_addr= inet_addr("127.0.0.1");
+    client_addr.sin_addr.s_addr= inet_addr(sender_arg->ip);
 
-    // time check
-    struct packet packet;
-    packet.action = '1';
-    packet.index = '2';
-    packet.time = 30; // little endian -> big endian
-    strcpy(packet.name, "subject");
+    send_time = 0;
+    while (!sender_arg->quitflag) {
+	/* time check */
+	if (send_time + sender_arg->delay_time > time(NULL)) {
+	    continue;
+	}
 
-    //    while(1) {
-    // send
-    sendto(sock, &packet, sizeof(packet) + 1, 0,
-	    (struct sockaddr *) &client_addr, sizeof(client_addr));
+	send_time = time(NULL);
 
-    //    }
-#endif
-    return 0;
+	/* make packet */
+	struct packet packet;
+	packet.action = DATA_PACKET;
+	packet.index = self;
+	packet.time = htonl(30);
+	strcpy(packet.name, "subject");
+
+	/* send packet */
+	sendto(sock, &packet, sizeof(packet) + 1, 0,
+		(struct sockaddr *) &client_addr, sizeof(client_addr));
+    }
+
+    pthread_exit(NULL);
 }

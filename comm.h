@@ -20,6 +20,7 @@ struct sender_arg
 	int sockfd;
 	char ip[IP_NAME_MAX];
 	int quitflag;
+	time_t delay_time;
 };
 
 struct packet {

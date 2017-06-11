@@ -92,18 +92,3 @@ void *thr_recognizer(void *arg)
 
 	pthread_exit(NULL);
 }
-
-void *thr_sender(void *arg)
-{
-    struct sender_arg *sender_arg = arg;
-
-    printf("thr_sender!\n");
-    while (!sender_arg->quitflag) {
-	printf("id = %s, flag %d\n", sender_arg->ip, 
-		sender_arg->quitflag);
-	;
-    }
-
-    printf("thr_sender dead\n");
-    pthread_exit(NULL);
-}
