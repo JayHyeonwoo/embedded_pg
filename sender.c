@@ -53,8 +53,10 @@ void *thr_sender(void *arg)
 	/* make packet */
 	packet.action = DATA_PACKET;
 	packet.index = self;
-	cur_subject(scheds, nsched, packet.name);
-	packet.time = htonl(get_total_min());
+	strcpy(packet.name, "subject");
+	packet.time = htonl(10);
+	//cur_subject(scheds, nsched, packet.name);
+	//packet.time = htonl(get_total_min());
 
 	/* send packet */
 	sendto(sock, &packet, sizeof(packet) + 1, 0,

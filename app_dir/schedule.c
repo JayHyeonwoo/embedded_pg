@@ -95,7 +95,6 @@ int main(void)
 
 				    pthread_mutex_lock(&information_list_lock);
 
-				    information_list[i];
 				    printf("%s %d %s\n", 
 					    index2ip(information_list[i].index),
 					    information_list[i].time,

@@ -53,10 +53,10 @@ void *thr_receiver(void *arg)
 
 	char action = packet.action;
 	char index = packet.index;
-	int time = packet.time;
+	int time = ntohl(packet.time);
 	char name[19];
 	strcpy(name, packet.name);
-	printf("packet %c %c %d %s\n", action, index, time, name);
+	printf("packet %d %d %d %s\n", action, index, time, name);
 
 
 	switch(action) {
