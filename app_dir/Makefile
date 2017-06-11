@@ -1,4 +1,4 @@
-TARGETS = schedule ultrasonic_wave
+#TARGETS = ultrasonic_wave
 
 SCHEDULE_OBJS = schedule.o bright_control.o
 ULTRASONIC_OBJS = ultrasonic_wave.o
@@ -11,16 +11,13 @@ CFLAGS = -Wall -W
 CFLAGS += -g
 
 %.o: %.c
-	$(CC) -o $*.o $< -c $(CFLAGS)  	
+	$(CC) -o $*.o $< -c $(CFLAGS)  	$(CPPFLAGS) $(LDFLAGS)
+	mv $@ ../
 
-all: $(TARGETS)
-
-
-schedule: $(SCHEDULE_OBJS)
-	$(CC) -o $@ $^ 
+all: $(TARGETS) $(SCHEDULE_OBJS)
 
 ultrasonic_wave: $(ULTRASONIC_OBJS)
-	$(CC) -o $@ $^ -lwiringPi
+	$(CC) -o $@ $^ -lwiringPi $(LDFLAGS)
 
 clean:
 	-rm -f $(TARGETS) $(OBJS)

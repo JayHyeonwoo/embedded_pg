@@ -1,0 +1,119 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+BRIGHT_INFO_FILE	bright_control.c	15;"	d	file:
+BUF_SIZE	bright_control.c	18;"	d	file:
+BUF_SIZE	ultrasonic_wave.c	20;"	d	file:
+CC	Makefile	/^CC = gcc$/;"	m
+CFLAGS	Makefile	/^CFLAGS = -Wall -W$/;"	m
+DEBUGGING	esp_lightWifiBulbLanCtrl.py	/^DEBUGGING = False$/;"	v
+DEBUGGING	originLight.py	/^DEBUGGING = False$/;"	v
+FIFO_FILE	bright_control.c	12;"	d	file:
+FIFO_LIGHT	ultrasonic_wave.c	14;"	d	file:
+FIFO_REQUIRED_TIME	bright_control.c	13;"	d	file:
+FIFO_REQUIRED_TIME	ultrasonic_wave.c	15;"	d	file:
+LIGHT_PROC_NAME	bright_control.c	16;"	d	file:
+LIGHT_PROC_NAME	ultrasonic_wave.c	17;"	d	file:
+MCAST_GRP	esp_lightWifiBulbLanCtrl.py	/^MCAST_GRP = '239.255.255.250'$/;"	v
+MCAST_GRP	originLight.py	/^MCAST_GRP = '239.255.255.250'$/;"	v
+OBJS	Makefile	/^OBJS = $(SCHEDULE_OBJS) $(ULTRASONIC_OBJS)$/;"	m
+PROJECT_EXEC_PATH	ultrasonic_wave.c	18;"	d	file:
+RUNNING	esp_lightWifiBulbLanCtrl.py	/^	RUNNING = False$/;"	v
+RUNNING	esp_lightWifiBulbLanCtrl.py	/^RUNNING = True$/;"	v
+RUNNING	originLight.py	/^  RUNNING = False$/;"	v
+RUNNING	originLight.py	/^RUNNING = True$/;"	v
+SCHEDULE_OBJS	Makefile	/^SCHEDULE_OBJS = schedule.o bright_control.o$/;"	m
+STUDYING_NUM	ultrasonic_wave.c	21;"	d	file:
+Subject	bright_control.c	/^struct Subject$/;"	s	file:
+TARGETS	Makefile	/^TARGETS = schedule ultrasonic_wave$/;"	m
+ULTRASONIC_OBJS	Makefile	/^ULTRASONIC_OBJS = ultrasonic_wave.o$/;"	m
+bright	bright_control.c	/^	int bright;$/;"	m	struct:Subject	file:
+buffer	schedule.c	/^struct termios buffer, save;$/;"	v	typeref:struct:termios
+bulb_idx2ip	esp_lightWifiBulbLanCtrl.py	/^bulb_idx2ip = {}$/;"	v
+bulb_idx2ip	originLight.py	/^bulb_idx2ip = {}$/;"	v
+bulbs_detection_loop	esp_lightWifiBulbLanCtrl.py	/^def bulbs_detection_loop():$/;"	f
+bulbs_detection_loop	originLight.py	/^def bulbs_detection_loop():$/;"	f
+change_sched	schedule.c	/^void change_sched()$/;"	f
+change_subject_bright	bright_control.c	/^int change_subject_bright(int subject_no)$/;"	f
+check_sched	schedule.c	/^void check_sched()$/;"	f
+check_sched_date	schedule.c	/^void check_sched_date()$/;"	f
+child_pid	ultrasonic_wave.c	/^int child_pid;$/;"	v
+cur_subject	schedule.c	/^void cur_subject(schedule *a,int n ,char *buf)$/;"	f
+current_command_id	esp_lightWifiBulbLanCtrl.py	/^current_command_id = 0$/;"	v
+current_command_id	originLight.py	/^current_command_id = 0$/;"	v
+date	schedule.c	/^	char date[7];$/;"	m	struct:schedule	file:
+debug	esp_lightWifiBulbLanCtrl.py	/^def debug(msg):$/;"	f
+debug	originLight.py	/^def debug(msg):$/;"	f
+delete_sched	schedule.c	/^void delete_sched()$/;"	f
+detected_bulbs	esp_lightWifiBulbLanCtrl.py	/^detected_bulbs = {}$/;"	v
+detected_bulbs	originLight.py	/^detected_bulbs = {}$/;"	v
+detection_thread	esp_lightWifiBulbLanCtrl.py	/^	detection_thread = Thread(target=bulbs_detection_loop)$/;"	v
+detection_thread	originLight.py	/^  detection_thread = Thread(target=bulbs_detection_loop)$/;"	v
+display_bulb	esp_lightWifiBulbLanCtrl.py	/^def display_bulb(idx):$/;"	f
+display_bulb	originLight.py	/^def display_bulb(idx):$/;"	f
+display_bulbs	esp_lightWifiBulbLanCtrl.py	/^def display_bulbs():$/;"	f
+display_bulbs	originLight.py	/^def display_bulbs():$/;"	f
+echoPin	ultrasonic_wave.c	24;"	d	file:
+get_light_proc_pid	bright_control.c	/^int get_light_proc_pid(void)$/;"	f
+get_light_proc_pid	ultrasonic_wave.c	/^int get_light_proc_pid(void)$/;"	f
+get_param_value	esp_lightWifiBulbLanCtrl.py	/^def get_param_value(data, param):$/;"	f
+get_param_value	originLight.py	/^def get_param_value(data, param):$/;"	f
+get_process_id	bright_control.c	/^int get_process_id(char *proc_name)$/;"	f
+get_subject_bright	bright_control.c	/^int get_subject_bright(char *subject_name)$/;"	f
+get_total_min	bright_control.c	/^int get_total_min()$/;"	f
+getch	schedule.c	/^char getch()$/;"	f
+handle_search_response	esp_lightWifiBulbLanCtrl.py	/^def handle_search_response(data):$/;"	f
+handle_search_response	originLight.py	/^def handle_search_response(data):$/;"	f
+handle_user_input	esp_lightWifiBulbLanCtrl.py	/^def handle_user_input():$/;"	f
+handle_user_input	originLight.py	/^def handle_user_input():$/;"	f
+is_cur_bright_changed	esp_lightWifiBulbLanCtrl.py	/^is_cur_bright_changed = 0$/;"	v
+is_person_here	esp_lightWifiBulbLanCtrl.py	/^is_person_here = 0$/;"	v
+listen_socket	esp_lightWifiBulbLanCtrl.py	/^listen_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)$/;"	v
+listen_socket	originLight.py	/^listen_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)$/;"	v
+main	schedule.c	/^int main(void)$/;"	f
+main	ultrasonic_wave.c	/^int main(void)$/;"	f
+menu_sched	schedule.c	/^void menu_sched()$/;"	f
+menu_sel	schedule.c	/^int menu_sel()$/;"	f
+mreq	esp_lightWifiBulbLanCtrl.py	/^mreq = struct.pack("4sl", socket.inet_aton(MCAST_GRP), socket.INADDR_ANY)$/;"	v
+mreq	originLight.py	/^mreq = struct.pack("4sl", socket.inet_aton(MCAST_GRP), socket.INADDR_ANY)$/;"	v
+myflush	schedule.c	/^void myflush()$/;"	f
+name	bright_control.c	/^	char name[20];$/;"	m	struct:Subject	file:
+name_sub	schedule.c	/^	char name_sub[20];$/;"	m	struct:schedule	file:
+next_cmd_id	esp_lightWifiBulbLanCtrl.py	/^def next_cmd_id():$/;"	f
+next_cmd_id	originLight.py	/^def next_cmd_id():$/;"	f
+operate_on_bulb	esp_lightWifiBulbLanCtrl.py	/^def operate_on_bulb(idx, method, params):$/;"	f
+operate_on_bulb	originLight.py	/^def operate_on_bulb(idx, method, params):$/;"	f
+output_schedtime	schedule.c	/^void output_schedtime(schedule *a, int n, char (*buf)[11])$/;"	f
+print_cli_usage	esp_lightWifiBulbLanCtrl.py	/^def print_cli_usage():$/;"	f
+print_cli_usage	originLight.py	/^def print_cli_usage():$/;"	f
+re_align	schedule.c	/^void re_align(schedule *a, int n)$/;"	f
+register_sched	schedule.c	/^int register_sched()$/;"	f
+save	schedule.c	/^struct termios buffer, save;$/;"	v	typeref:struct:
+scan_socket	esp_lightWifiBulbLanCtrl.py	/^scan_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) $/;"	v
+scan_socket	originLight.py	/^scan_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) $/;"	v
+schedule	schedule.c	/^typedef struct schedule {$/;"	s	file:
+schedule	schedule.c	/^}schedule;$/;"	t	typeref:struct:schedule	file:
+select_bright_menu	bright_control.c	/^int select_bright_menu()$/;"	f
+select_subject_to_change_bright	bright_control.c	/^int select_subject_to_change_bright() $/;"	f
+send_search_broadcast	esp_lightWifiBulbLanCtrl.py	/^def send_search_broadcast():$/;"	f
+send_search_broadcast	originLight.py	/^def send_search_broadcast():$/;"	f
+send_sigusr1_and_fifo	ultrasonic_wave.c	/^int send_sigusr1_and_fifo(int pid, char *buf)$/;"	f
+set_bright	esp_lightWifiBulbLanCtrl.py	/^def set_bright(idx, bright):$/;"	f
+set_bright	originLight.py	/^def set_bright(idx, bright):$/;"	f
+set_current_light_bright	bright_control.c	/^int set_current_light_bright()$/;"	f
+set_req_light_bright	esp_lightWifiBulbLanCtrl.py	/^def set_req_light_bright(req_subject):$/;"	f
+sigusr1_handler	esp_lightWifiBulbLanCtrl.py	/^def sigusr1_handler(signum, frame):$/;"	f
+sigusr1_handler	schedule.c	/^void sigusr1_handler(int signo)$/;"	f
+sigusr1_handler	ultrasonic_wave.c	/^void sigusr1_handler(int signo)$/;"	f
+time	schedule.c	/^	char time[5];$/;"	m	struct:schedule	file:
+toggle_bulb	esp_lightWifiBulbLanCtrl.py	/^def toggle_bulb(idx):$/;"	f
+toggle_bulb	originLight.py	/^def toggle_bulb(idx):$/;"	f
+total_sec	ultrasonic_wave.c	/^int total_sec;$/;"	v
+trigPin	ultrasonic_wave.c	23;"	d	file:
+tv_end	ultrasonic_wave.c	/^struct timeval tv_start, tv_end;$/;"	v	typeref:struct:
+tv_start	ultrasonic_wave.c	/^struct timeval tv_start, tv_end;$/;"	v	typeref:struct:timeval
+txt_read	schedule.c	/^int txt_read(schedule *a)$/;"	f
+txt_write	schedule.c	/^int txt_write(schedule *a, int n)$/;"	f

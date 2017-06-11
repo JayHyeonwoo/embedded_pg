@@ -68,6 +68,7 @@ void *thr_recognizer(void *arg)
 			sender_args[id].sockfd = sockfd;
 			strcpy(sender_args[id].ip, index2ip(id));
 			sender_args[id].quitflag = 0;
+			sender_args[id].delay_time = 10;
 
 			err = pthread_create(&tid,
 					NULL,

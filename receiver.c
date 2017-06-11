@@ -10,19 +10,10 @@
 
 #include "comm.h"
 
-static pthread_mutex_t information_list_lock = PTHREAD_MUTEX_INITIALIZER;
-
 int node_count = 2;
 
-struct information {
-    char index;
-    int time;
-    char subjuct_name[19];
-
-};
-
+pthread_mutex_t information_list_lock = PTHREAD_MUTEX_INITIALIZER;
 struct information information_list[256 - 2] = {};
-
 
 void *thr_receiver(void *arg)
 {
@@ -93,7 +84,7 @@ void *thr_receiver(void *arg)
 		pthread_mutex_lock(&information_list_lock);
 		information_list[index].time = time;
 		information_list[index].index = index;
-		strcpy(information_list[index].subjuct_name, name);
+		strcpy(information_list[index].subject_name, name);
 		pthread_mutex_unlock(&information_list_lock);
 
 		break;

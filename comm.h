@@ -31,6 +31,17 @@ struct packet {
 
 };
 
+struct information {
+    char index;
+    int time;
+    char subject_name[19];
+};
+
+/* global variables in receive.c */
+extern pthread_mutex_t information_list_lock;
+
+extern struct information information_list[256 - 2]; 
+
 extern void *thr_recognizer(void *);
 
 extern void *thr_sender(void *);
@@ -41,9 +52,9 @@ extern void update_netif_status(int, int);
 
 extern int get_netif_status(int);
 
-extern void broadcast_hello_packet(int);
+extern void broadcast_hello_packet(void);
 
-extern void braodcast_dead_packet(int);
+extern void braodcast_dead_packet(void);
 
 struct packet make_packet(u_int8_t, u_int8_t, u_int32_t,
 		const char *);

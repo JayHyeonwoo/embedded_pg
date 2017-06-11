@@ -10,16 +10,20 @@
 #include <stdbool.h>
 #include <time.h>
 
+#include <schedule.h>
 #include "comm.h"
 
 static int self = 3;
+
+schedule scheds[1000];
 
 void *thr_sender(void *arg)
 {
     struct sender_arg *sender_arg = arg;
     struct sockaddr_in client_addr;
+    struct packet packet;
     time_t send_time;
-    int sock;
+    int sock, nsched;
 
     printf("thr_sender!\n");
     sock = socket(AF_INET, SOCK_DGRAM, 0);
@@ -43,12 +47,14 @@ void *thr_sender(void *arg)
 
 	send_time = time(NULL);
 
+	/* read schedule info */
+	nsched = txt_read(scheds);
+
 	/* make packet */
-	struct packet packet;
 	packet.action = DATA_PACKET;
 	packet.index = self;
-	packet.time = htonl(30);
-	strcpy(packet.name, "subject");
+	cur_subject(scheds, nsched, packet.name);
+	packet.time = htonl(get_total_min());
 
 	/* send packet */
 	sendto(sock, &packet, sizeof(packet) + 1, 0,

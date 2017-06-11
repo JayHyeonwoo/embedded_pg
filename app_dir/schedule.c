@@ -5,31 +5,11 @@
 #include <termio.h>
 #include <time.h>
 
+#include <pthread.h>
+#include <comm.h>
+#include <devinfo.h>
 
-typedef struct schedule {
-	char date[7];
-	char name_sub[20];
-	char time[5];
-}schedule;
-
-/*-------------------prototype---------------------*/
-int menu_sel();
-void myflush();
-void menu_sched();
-int register_sched();
-void check_sched();
-void re_align(schedule *a, int n);
-void check_sched_date();
-void change_sched();
-void delete_sched();
-char getch();
-int txt_read(schedule *a);
-int txt_write(schedule *a, int n);
-void cur_subject(schedule *a, int n ,char *buf);
-void output_schedtime(schedule *a, int n, char (*buf)[11]);
-
-void sigusr1_handler(int signo);
-/*-------------------------------------------------*/
+#include "schedule.h"
 
 struct termios buffer, save;
 
@@ -47,16 +27,44 @@ struct termios buffer, save;
 
    */
 
+
 int main(void)
 {
+    	pthread_t tid;
+	int err;
 
-	// Send Hello packet
+    	broadcast_hello_packet();
 
-	// create receiver 	-> check invoke syscall
-	// create recognizer
+	/* create receiver, reognizer thread */
+	err = pthread_create(&tid, NULL, thr_receiver, NULL);
+	if (err) {
+	    fprintf(stderr, "Can't create thr_receiver thread: %s\n",
+		    strerror(err));
+	    exit(-1);
+	}
 
+	err = pthread_detach(tid);
+	if (err) {
+	    fprintf(stderr, "Can't detach thr_receiver thread: %s\n",
+		    strerror(err));
+	    exit(-1);
+	}
 
-	int sel;
+	pthread_create(&tid, NULL, thr_recognizer, NULL);
+	if (err) {
+	    fprintf(stderr, "Can't create thr_recognizer thread: %s\n",
+		    strerror(err));
+	    exit(-1);
+	}
+
+	pthread_detach(tid);
+	if (err) {
+	    fprintf(stderr, "Can't detach thr_recognizer thread: %s\n",
+		    strerror(err));
+	    exit(-1);
+	}
+
+	int sel, i, status;
 	system("clear");
 	printf("Hello Sydney\n");
 	sleep(1);
@@ -79,11 +87,23 @@ int main(void)
 
 			case 3: // 공부현황
 				// when information list, check mutex
+				for (i = 1; i <= 5; ++i) {
+				    status = get_netif_status(i);
+				    if (!status) {
+					continue;
+				    }
 
+				    pthread_mutex_lock(&information_list_lock);
 
+				    information_list[i];
+				    printf("%s %d %s\n", 
+					    index2ip(information_list[i].index),
+					    information_list[i].time,
+					    information_list[i].subject_name);
+					    
+				    pthread_mutex_unlock(&information_list_lock);
+				}
 				break;
-
-
 			default:
 				break;
 		}
