@@ -11,12 +11,8 @@
 
 #include "comm.h"
 
-int arr[999] = {};
-
-
 //send data
-
-void *thr_sender(void *arg)
+int main(void)
 {
     int sock;
     sock = socket(AF_INET, SOCK_DGRAM, 0);
@@ -26,7 +22,13 @@ void *thr_sender(void *arg)
         exit( 1) ;
     }
 
+    broadcast_hello_packet(sock);
 
+    getchar();
+
+    braodcast_dead_packet(sock);
+
+#if 0
     struct sockaddr_in client_addr;
     memset(&client_addr, 0, sizeof(client_addr));
     client_addr.sin_family = AF_INET;
@@ -46,5 +48,6 @@ void *thr_sender(void *arg)
                (struct sockaddr *) &client_addr, sizeof(client_addr));
 
 //    }
-
+#endif
+    return 0;
 }

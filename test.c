@@ -13,7 +13,6 @@ int main(int argc, char *argv[])
 	pthread_t receive_tid, recognizer_tid;
 	void *retval;
 
-
 	pthread_create(&receive_tid, NULL, thr_receiver, NULL);
 	pthread_create(&recognizer_tid, NULL, thr_recognizer, NULL);
 

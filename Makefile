@@ -24,15 +24,18 @@ endif
 export KDIR
 export ARCH
 
-all: kernel test
+all: kernel test test_sender
 
 kernel:
 	$(MAKE) -C kernel
 
-test: test.o devinfo.o
-	$(CC) -o $@ $?
+test: test.o devinfo.o recognizer.o receiver.o
+	$(CC) -o $@ $? $(LDFLAGS)
+
+test_sender: sender.o packet.o
+	$(CC) -o $@ sender.o packet.o $(LDFLAGS)
 
 clean:
-	$(RM) devinfo.o test.o test tags *.o
+	$(RM) devinfo.o test.o test tags *.o test_sender
 
 .PHONY: all clean kernel

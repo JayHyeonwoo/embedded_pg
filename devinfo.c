@@ -57,9 +57,14 @@ char *mac2ip(const char *mac)
 	return NULL;
 }
 
-char *id2ip(int id)
+char *index2ip(int id)
 {
 	return arptbl[id - '1'].ip;
+}
+
+int ip2index(const char *ip)
+{
+	return ip[IP_NAME_MAX - 2];
 }
 
 /*

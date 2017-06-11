@@ -1,6 +1,8 @@
 #ifndef _COMM_H
 #define _COMM_H
 
+#include <stdint.h>
+#include <sys/types.h>
 #include "devinfo.h"
 
 #define RX_PORT		9007
@@ -37,5 +39,11 @@ extern void update_netif_status(int, int);
 
 extern int get_netif_status(int);
 
+extern void broadcast_hello_packet(int);
+
+extern void braodcast_dead_packet(int);
+
+struct packet make_packet(u_int8_t, u_int8_t, u_int32_t,
+		const char *);
 
 #endif

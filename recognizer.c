@@ -66,7 +66,7 @@ void *thr_recognizer(void *arg)
 		if (status) {
 			/* set thread argument */
 			sender_args[id - '1'].sockfd = sockfd;
-			strcpy(sender_args[id].ip, id2ip(id));
+			strcpy(sender_args[id].ip, index2ip(id));
 
 			err = pthread_create(&tids[id - '1'],
 					NULL,

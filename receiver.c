@@ -25,20 +25,6 @@ struct information {
 struct information list[256 - 2] = {};
 bool index_management[256 - 2] = {};
 
-struct packet make_packet(u_int8_t action, u_int8_t index,
-		u_int32_t time, const char *name) {
-
-    struct packet packet;
-
-    packet.action = action;
-    packet.index = index;
-    packet.time = time;
-    strcpy(packet.name, name);
-
-    return packet;
-
-}
-
 void *thr_receiver(void *arg)
 {
     printf("thr_receive start\n");

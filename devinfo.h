@@ -9,6 +9,8 @@ long getdevinfo(long maxdev, struct devinfo *devinfo);
 
 char *mac2ip(const char *);
 
-char *id2ip(int);
+char *index2ip(int);
+
+int ip2index(const char *);
 
 #endif
