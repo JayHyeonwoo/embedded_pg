@@ -15,10 +15,11 @@ static int netif_recent_idx;
 static pthread_mutex_t netif_status_lock = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t netif_status_cond = PTHREAD_COND_INITIALIZER;
 
+static struct sender_arg sender_args[DEVINFO_MAX];
+
 void update_netif_status(int index, int value)
 {
 	pthread_mutex_lock(&netif_status_lock);
-	printf("update_netif_status!\n");
 	netif_status[index] = value;
 	netif_recent_idx = index;
 	pthread_mutex_unlock(&netif_status_lock);
@@ -40,9 +41,8 @@ void *thr_recognizer(void *arg)
 {
 	(void)arg;
 
-	struct sender_arg sender_args[DEVINFO_MAX];
+	pthread_t tid;
 	int sockfd, err, status, id;
-	pthread_t tids[DEVINFO_MAX];
 
 	printf("thr_recognizer!\n");
 	if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
@@ -65,26 +65,28 @@ void *thr_recognizer(void *arg)
 
 		if (status) {
 			/* set thread argument */
-			sender_args[id - '1'].sockfd = sockfd;
+			sender_args[id].sockfd = sockfd;
 			strcpy(sender_args[id].ip, index2ip(id));
+			sender_args[id].quitflag = 0;
 
-			err = pthread_create(&tids[id - '1'],
+			err = pthread_create(&tid,
 					NULL,
 					thr_sender,
-					&sender_args[id - '1']);
+					&sender_args[id]);
 			if (err) {
 				/* error handling */
-			}
-		} else {
-			/* kill thread */
-			if (tids[id - '1'] == 0) {
-				continue;
 			}
 
-			err = pthread_kill(tids[id - '1'], SIGQUIT);
+			err = pthread_detach(tid);
 			if (err) {
-				/* error handling */
+			    /* error handling */
 			}
+
+		} else {
+			/* kill thread */
+			sender_args[id].quitflag = 1;
+			printf("id = %d, flag %d\n", id, 
+				sender_args[id].quitflag);
 		}
 	}
 
@@ -93,6 +95,15 @@ void *thr_recognizer(void *arg)
 
 void *thr_sender(void *arg)
 {
-	/* stub */
-	printf("thr_sender!\n");
+    struct sender_arg *sender_arg = arg;
+
+    printf("thr_sender!\n");
+    while (!sender_arg->quitflag) {
+	printf("id = %s, flag %d\n", sender_arg->ip, 
+		sender_arg->quitflag);
+	;
+    }
+
+    printf("thr_sender dead\n");
+    pthread_exit(NULL);
 }
