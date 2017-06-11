@@ -28,37 +28,42 @@ struct packet make_packet(u_int8_t action, u_int8_t index,
 
 void broadcast_hello_packet(int sock)
 {
-	//invoke system call to update ip address
 	struct packet packet = make_packet(HELLO_PACKET, self, 0, "");
 
-	int i = 0;
+	struct devinfo devinfos[5];
+	long ndev = getdevinfo(5, devinfos);
 
-	struct sockaddr_in client_addr;
-	memset(&client_addr, 0, sizeof(client_addr));
-	client_addr.sin_family = AF_INET;
-	client_addr.sin_port = htons(RX_PORT);
-	client_addr.sin_addr.s_addr= inet_addr("127.0.0.1");
+	long i = 0
+	for(; i < ndev; i++) {
 
+		struct sockaddr_in client_addr;
+		memset(&client_addr, 0, sizeof(client_addr));
+		client_addr.sin_family = AF_INET;
+		client_addr.sin_port = htons(RX_PORT);
+		client_addr.sin_addr.s_addr= inet_addr(devinfos[i]);
 
-	sendto(sock, &packet, sizeof(packet) + 1, 0,
-			(struct sockaddr *) &client_addr, sizeof(client_addr));
+		sendto(sock, &packet, sizeof(packet) + 1, 0,
+				(struct sockaddr *) &client_addr, sizeof(client_addr));
+	}
 }
 
 void braodcast_dead_packet(int sock) {
 
-	//invoke system call to update ip address
 	struct packet packet = make_packet(DEAD_PACKET, self, 0, "");
 
-	int i = 0;
+	struct devinfo devinfos[5];
+	long ndev = getdevinfo(5, devinfos);
 
-	struct sockaddr_in client_addr;
-	memset(&client_addr, 0, sizeof(client_addr));
-	client_addr.sin_family = AF_INET;
-	client_addr.sin_port = htons(RX_PORT);
-	client_addr.sin_addr.s_addr= inet_addr("127.0.0.1");
+	long i = 0
+	for(; i < ndev; i++) {
 
+		struct sockaddr_in client_addr;
+		memset(&client_addr, 0, sizeof(client_addr));
+		client_addr.sin_family = AF_INET;
+		client_addr.sin_port = htons(RX_PORT);
+		client_addr.sin_addr.s_addr= inet_addr(devinfos[i]);
 
-	sendto(sock, &packet, sizeof(packet) + 1, 0,
-			(struct sockaddr *) &client_addr,
-			sizeof(client_addr));
+		sendto(sock, &packet, sizeof(packet) + 1, 0,
+				(struct sockaddr *) &client_addr, sizeof(client_addr));
+	}
 }
