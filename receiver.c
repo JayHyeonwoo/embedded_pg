@@ -88,6 +88,13 @@ void *thr_receiver(void *arg)
                 list[index].time = time;
                 list[index].index = index;
                 strcpy(list[index].subjuct_name, name);
+
+		status = get_netif_status(index);
+		if (!status) {
+			update_netif_status(index, 1);
+		}
+		// update information
+
                 break;
         }
     }
