@@ -10,9 +10,8 @@
 
 #include "comm.h"
 
-int arr[999] = {};
+static pthread_mutex_t information_list_lock = PTHREAD_MUTEX_INITIALIZER;
 
-char* reference[5] = {"192.168.2.1", "192.168.2.2"};
 int node_count = 2;
 
 struct information {
@@ -22,8 +21,8 @@ struct information {
 
 };
 
-struct information list[256 - 2] = {};
-bool index_management[256 - 2] = {};
+struct information information_list[256 - 2] = {};
+
 
 void *thr_receiver(void *arg)
 {
@@ -85,15 +84,17 @@ void *thr_receiver(void *arg)
             case '3':
                 // update information
                 printf("case 3\n");
-                list[index].time = time;
-                list[index].index = index;
-                strcpy(list[index].subjuct_name, name);
 
-		status = get_netif_status(index);
-		if (!status) {
-			update_netif_status(index, 1);
-		}
-		// update information
+                status = get_netif_status(index);
+                if (!status) {
+                    update_netif_status(index, 1);
+                }
+
+                pthread_mutex_lock(&information_list_lock);
+                information_list[index].time = time;
+                information_list[index].index = index;
+                strcpy(information_list[index].subjuct_name, name);
+                pthread_mutex_unlock(&information_list_lock);
 
                 break;
         }
