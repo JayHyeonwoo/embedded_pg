@@ -29,6 +29,8 @@ void cur_subject(schedule *a, int n ,char *buf);
 void output_schedtime(schedule *a, int n, char (*buf)[11]);
 
 void sigusr1_handler(int signo);
+
+void print_cur_state();
 /*-------------------------------------------------*/
 
 struct termios buffer, save;
@@ -830,3 +832,26 @@ void sigusr1_handler(int signo)
 	exit(1);
 }
 /*-------------------------------------------------*/
+
+void print_cur_state()
+{
+	system("clear");
+
+	int i;
+	printf("-----------------------------------------------------------------------\n");
+	printf("                              공부  현황 \n");
+	for(i = 1 ; i <=/*배열 크기*/ ;i++)
+	{
+
+
+		if(get_netif_status(i) == 1) 
+		{ 
+			printf("%d번사용자   과목 :  %s     총 공부시간 : %d \n",i,/*infomationi.sub_name */, /*infomation.time*/)    
+		}
+	}
+	printf("-----------------------------------------------------------------------\n");
+	myflush();
+	printf("아무 키나 입력하세요\n");
+	getch();
+}
+
