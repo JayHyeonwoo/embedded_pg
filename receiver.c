@@ -69,19 +69,19 @@ void *thr_receiver(void *arg)
 
 
         switch(action) {
-            case '1':
+            case HELLO_PACKET:
                 // 헬로패킷이 수신되었을 때 index_management 배열을 수정하고
 		// 이후 mutex를 통해서 제어 신호 전달
                 printf("case 1\n");
 		update_netif_status(index, 1);
                 break;
-            case '2':
+            case DEAD_PACKET:
                 // 데드패킷이 수신되었을 때 루틴 처리
                 // unlock
                 printf("case 2\n");
 		update_netif_status(index, 0);
                 break;
-            case '3':
+            case DATA_PACKET:
                 // update information
                 printf("case 3\n");
 
@@ -89,7 +89,7 @@ void *thr_receiver(void *arg)
                 if (!status) {
                     update_netif_status(index, 1);
                 }
-
+// update application
                 pthread_mutex_lock(&information_list_lock);
                 information_list[index].time = time;
                 information_list[index].index = index;
