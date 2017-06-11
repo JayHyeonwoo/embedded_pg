@@ -1,12 +1,13 @@
 KDIR ?=	/usr/src/linux
 CFLAGS := -W -Wall
-CPPFLAGS := -I$(KDIR)/include -I$(shell pwd) -I$(shell pwd)/app_dir
-LDFLAGS := -lpthread
+CPPFLAGS := -I$(KDIR)/include -I$(shell pwd)/include
 CROSS_COMPILE ?= 
 
 CC := $(CROSS_COMPILE)gcc
 AR := $(CROSS_COMPILE)ar
 LD := $(CROSS_COMPILE)ld
+
+SUBDIRS := kernel studysys test ultrasonic_wave
 
 ifeq ($(DEBUG),y)
 	CPPFLAGS += -DDEBUG
@@ -21,31 +22,30 @@ else
 	CPPFLAGS += -DX86
 endif
 
-export KDIR
 export ARCH
+export CFLAGS
 export CPPFLAGS
-export LDFLAGS
+export CC
+export AR
+export LD
 
-all: kernel app_dir schedule 
+all: kernel studysys ultrasonic_wave
 
 kernel:
-	$(MAKE) -C kernel
+	$(MAKE) -C kernel KDIR=$(KDIR)
 
-app_dir:
-	$(MAKE) -C app_dir
+studysys:
+	$(MAKE) -C $@
 
-schedule: devinfo.o recognizer.o receiver.o sender.o packet.o \
-    schedule.o bright_control.o
-	$(CC) -o $@ $^ $(LDFLAGS)
+ultrasonic_wave:
+	$(MAKE) -C $@
 
-test: test.o devinfo.o recognizer.o receiver.o sender.o
-	$(CC) -o $@ test.o devinfo.o recognizer.o receiver.o sender.o $(LDFLAGS)
-
-test_sender: test_sender.o sender.o packet.o
-	$(CC) -o $@ test_sender.o sender.o packet.o $(LDFLAGS)
+test:
+	$(MAKE) -C $@
 
 clean:
-	$(RM) devinfo.o test.o test tags *.o test_sender schedule
-	$(MAKE) clean -C app_dir
+	$(MAKE) -C studysys clean
+	$(MAKE) -C ultrasonic_wave clean
+	$(MAKE) -C test clean
 
-.PHONY: all clean kernel app_dir
+.PHONY: all clean $(SUBDIRS)
