@@ -29,7 +29,7 @@ void *thr_receiver(void *arg)
 {
     printf("thr_receive start\n");
 
-    int sock;
+    int sock, status;
     sock = socket(AF_INET, SOCK_DGRAM, 0);
 
     if (-1 == sock) {
