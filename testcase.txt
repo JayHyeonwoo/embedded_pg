@@ -1,0 +1,3 @@
+[B.A.T.M.A.N. adv 2016.3, MainIF/MAC: wlan0/90:9f:33:eb:63:e9 (bat0 BATMAN_IV)]
+           IF        Neighbor      last-seen
+        wlan0   90:9f:33:ec:04:8a    0.190s
