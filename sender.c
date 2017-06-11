@@ -11,15 +11,14 @@
 
 #include "comm.h"
 
-//send data
 int main(void)
 {
     int sock;
     sock = socket(AF_INET, SOCK_DGRAM, 0);
     if (-1 == sock)
     {
-        printf( "socket 생성 실패");
-        exit( 1) ;
+	printf( "socket 생성 실패");
+	exit( 1) ;
     }
 
     broadcast_hello_packet(sock);
@@ -42,12 +41,12 @@ int main(void)
     packet.time = 30; // little endian -> big endian
     strcpy(packet.name, "subject");
 
-//    while(1) {
-        // send
-        sendto(sock, &packet, sizeof(packet) + 1, 0,
-               (struct sockaddr *) &client_addr, sizeof(client_addr));
+    //    while(1) {
+    // send
+    sendto(sock, &packet, sizeof(packet) + 1, 0,
+	    (struct sockaddr *) &client_addr, sizeof(client_addr));
 
-//    }
+    //    }
 #endif
     return 0;
 }

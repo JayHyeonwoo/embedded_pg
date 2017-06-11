@@ -11,8 +11,7 @@
 
 #include "comm.h"
 
-char* reference[5] = {"","192.168.2.1", "192.168.2.2"};
-char self = '3';
+char self = 3;
 
 struct packet make_packet(u_int8_t action, u_int8_t index,
 		u_int32_t time, const char *name) {
@@ -30,7 +29,7 @@ struct packet make_packet(u_int8_t action, u_int8_t index,
 void broadcast_hello_packet(int sock)
 {
 	//invoke system call to update ip address
-	struct packet packet = make_packet('1', self, 0, "");
+	struct packet packet = make_packet(HELLO_PACKET, self, 0, "");
 
 	int i = 0;
 
@@ -48,7 +47,7 @@ void broadcast_hello_packet(int sock)
 void braodcast_dead_packet(int sock) {
 
 	//invoke system call to update ip address
-	struct packet packet = make_packet('2', self, 0, "");
+	struct packet packet = make_packet(DEAD_PACKET, self, 0, "");
 
 	int i = 0;
 

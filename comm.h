@@ -8,20 +8,21 @@
 #define RX_PORT		9007
 #define TX_PORT		9006
 
-enum {
-	HELLO_PACKET = '1',
-	DEAD_PACKET = '2',
-	DATA_PACKET = '3'
+enum
+{
+	HELLO_PACKET,
+	DEAD_PACKET,
+	DATA_PACKET
 };
 
 struct sender_arg
 {
 	int sockfd;
 	char ip[IP_NAME_MAX];
+	int quitflag;
 };
 
 struct packet {
-
     u_int8_t action;
     u_int8_t index;
     u_int32_t time;

@@ -32,8 +32,8 @@ void *thr_receiver(void *arg)
     sock = socket(AF_INET, SOCK_DGRAM, 0);
 
     if (-1 == sock) {
-        printf("socket create fail");
-        exit(1);
+	printf("socket create fail");
+	exit(1);
     }
 
     struct sockaddr_in server_addr;
@@ -44,60 +44,60 @@ void *thr_receiver(void *arg)
 
     if( -1 == bind(sock, (struct sockaddr*)&server_addr, sizeof(server_addr) ) )
     {
-        printf( "bind() exe error \n");
-        exit( 1);
+	printf( "bind() exe error \n");
+	exit( 1);
     }
 
     while(1) {
 
-        struct sockaddr_in client_addr;
-        int client_addr_size;
-        struct packet packet;
+	struct sockaddr_in client_addr;
+	int client_addr_size;
+	struct packet packet;
 
-        // recvfrom(sock, &packet, sizeof(packet), 0,
-        //          (struct sockaddr *) &client_addr, sizeof(client_addr));
+	// recvfrom(sock, &packet, sizeof(packet), 0,
+	//          (struct sockaddr *) &client_addr, sizeof(client_addr));
 
-        recvfrom(sock, &packet, sizeof(packet), 0,
-                 NULL, 0);
+	recvfrom(sock, &packet, sizeof(packet), 0,
+		NULL, 0);
 
-        char action = packet.action;
-        char index = packet.index;
-        int time = packet.time;
-        char name[19];
-        strcpy(name, packet.name);
-        printf("packet %c %c %d %s\n", action, index, time, name);
+	char action = packet.action;
+	char index = packet.index;
+	int time = packet.time;
+	char name[19];
+	strcpy(name, packet.name);
+	printf("packet %c %c %d %s\n", action, index, time, name);
 
 
-        switch(action) {
-            case '1':
-                // 헬로패킷이 수신되었을 때 index_management 배열을 수정하고
+	switch(action) {
+	    case HELLO_PACKET:
+		// 헬로패킷이 수신되었을 때 index_management 배열을 수정하고
 		// 이후 mutex를 통해서 제어 신호 전달
-                printf("case 1\n");
+		printf("case 1\n");
 		update_netif_status(index, 1);
-                break;
-            case '2':
-                // 데드패킷이 수신되었을 때 루틴 처리
-                // unlock
-                printf("case 2\n");
+		break;
+	    case DEAD_PACKET:
+		// 데드패킷이 수신되었을 때 루틴 처리
+		// unlock
+		printf("case 2\n");
 		update_netif_status(index, 0);
-                break;
-            case '3':
-                // update information
-                printf("case 3\n");
+		break;
+	    case DATA_PACKET:
+		// update information
+		printf("case 3\n");
 
-                status = get_netif_status(index);
-                if (!status) {
-                    update_netif_status(index, 1);
-                }
+		status = get_netif_status(index);
+		if (!status) {
+		    update_netif_status(index, 1);
+		}
+		// update application
+		pthread_mutex_lock(&information_list_lock);
+		information_list[index].time = time;
+		information_list[index].index = index;
+		strcpy(information_list[index].subjuct_name, name);
+		pthread_mutex_unlock(&information_list_lock);
 
-                pthread_mutex_lock(&information_list_lock);
-                information_list[index].time = time;
-                information_list[index].index = index;
-                strcpy(information_list[index].subjuct_name, name);
-                pthread_mutex_unlock(&information_list_lock);
-
-                break;
-        }
+		break;
+	}
     }
 }
 
