@@ -30,7 +30,7 @@ kernel:
 	$(MAKE) -C kernel
 
 test: test.o devinfo.o recognizer.o receiver.o
-	$(CC) -o $@ $? $(LDFLAGS)
+	$(CC) -o $@ test.o devinfo.o recognizer.o receiver.o $(LDFLAGS)
 
 test_sender: sender.o packet.o
 	$(CC) -o $@ sender.o packet.o $(LDFLAGS)
