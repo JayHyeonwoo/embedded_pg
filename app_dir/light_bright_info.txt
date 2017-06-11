@@ -1,0 +1,5 @@
+Korean               100
+Math                 075
+English              050 
+Science              025
+History              002
