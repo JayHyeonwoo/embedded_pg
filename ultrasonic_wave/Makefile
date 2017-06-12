@@ -1,13 +1,22 @@
 TARGET := ultrasonic
-OBJS := $(patsubst %.c, %.o, $(wildcard *.c))
+SRCS := $(wildcard *.c)
+OBJS := $(patsubst %.c, %.o, $(SRCS))
 LDFLAGS := -lwiringPi -lpthread
+
+DEP := .dep
 
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
-clean:
-	$(RM) $(TARGET)
+dep: $(DEP)
 
-.PHONY: all clean
+$(DEP): $(SRCS)
+	$(CC) -MM $(CPPFLAGS) $^ > $@
+clean:
+	$(RM) $(TARGET) $(OBJS) $(DEP)
+
+include $(DEP)
+
+.PHONY: all clean dep
