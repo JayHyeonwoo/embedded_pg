@@ -1,95 +1,76 @@
+#include <arpa/inet.h>
+#include <netinet/in.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <unistd.h>
-#include <stdio.h>
+#include <errno.h>
+#include <time.h>
 #include <stdlib.h>
-#include <signal.h>
 #include <string.h>
+#include <syslog.h>
 #include <pthread.h>
 
-#include "comm.h"
-#include "devinfo.h"
+/* user defined header files */
+#include <comm.h>
+#include <devinfo.h>
+#include <schedule.h>
 
-static int netif_status[DEVINFO_MAX];
-static int netif_recent_idx;
-static pthread_mutex_t netif_status_lock = PTHREAD_MUTEX_INITIALIZER;
-static pthread_cond_t netif_status_cond = PTHREAD_COND_INITIALIZER;
-
-static struct sender_arg sender_args[DEVINFO_MAX];
-
-void update_netif_status(int index, int value)
-{
-	pthread_mutex_lock(&netif_status_lock);
-	netif_status[index] = value;
-	netif_recent_idx = index;
-	pthread_mutex_unlock(&netif_status_lock);
-	pthread_cond_signal(&netif_status_cond);
-}
-
-int get_netif_status(int index)
-{
-	int ret;
-
-	pthread_mutex_lock(&netif_status_lock);
-	ret = netif_status[index];
-	pthread_mutex_unlock(&netif_status_lock);
-
-	return ret;
-}
+static time_t delay_time;
+static struct devinfo devinfos[DEVINFO_MAX];
 
 void *thr_recognizer(void *arg)
 {
 	(void)arg;
 
-	pthread_t tid;
-	int sockfd, err, status, id;
+	struct sockaddr_in client_addr;
+	struct packet packet;
+	struct information info;
+	time_t retrieve_time;
+	int sockfd;
+	long ndev, i;
 
-	printf("thr_recognizer!\n");
+	syslog(LOG_DEBUG, "thr_recognizer is created\n");
 	if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
-		perror("socket error");
-		pthread_exit((void *)-1);
+		func_syslog(LOG_ERR, "socket error: %s\n", strerror(errno));
+		pthread_exit((void *)errno);
 	}
 
-	for (;;) {
-		pthread_mutex_lock(&netif_status_lock);
-		
-		pthread_cond_wait(&netif_status_cond, &netif_status_lock);
+	/* setup client_addr except ip */
+	memset(&client_addr, 0, sizeof(client_addr));
+	client_addr.sin_family = AF_INET;
+	client_addr.sin_port = htons(RX_PORT);
 
-		id = netif_recent_idx;
-		printf("thr_recognizer unlock! id = %d\n", id);
+	retrieve_time = 0;
+	for ( ; ; ) {
+		/* time check */
+		if (retrieve_time + delay_time > time(NULL)) {
+			continue;
+		}
+		retrieve_time = time(NULL);
 
-		pthread_mutex_unlock(&netif_status_lock);
+		/* retrieve network interface informations */
+		if ((ndev = getdevinfo(DEVINFO_MAX, devinfos)) < 0) {
+			func_syslog(LOG_ERR, "getdevinfo error: %s\n",
+				       	strerror(errno));
+			pthread_exit((void *)errno);
+		}
 
-		status = get_netif_status(id);
-		printf("status = %d\n", status);
+		self_info(&info);
+		pack_information(&info, &packet);
 
-		if (status) {
-			/* set thread argument */
-			sender_args[id].sockfd = sockfd;
-			strcpy(sender_args[id].ip, index2ip(id));
-			sender_args[id].quitflag = 0;
-			sender_args[id].delay_time = 10;
-
-			err = pthread_create(&tid,
-					NULL,
-					thr_sender,
-					&sender_args[id]);
-			if (err) {
-				/* error handling */
-			}
-
-			err = pthread_detach(tid);
-			if (err) {
-			    /* error handling */
-			}
-
-		} else {
-			/* kill thread */
-			sender_args[id].quitflag = 1;
-			printf("id = %d, flag %d\n", id, 
-				sender_args[id].quitflag);
+		/* broadcast packet */
+		for (i = 0; i < ndev; ++i) {
+			client_addr.sin_addr.s_addr= inet_addr(devinfos[i].ip);
+			/* send packet */
+			sendto(sockfd, &packet, sizeof(packet), 0,
+					(struct sockaddr *) &client_addr,
+					sizeof(client_addr));
 		}
 	}
 
 	pthread_exit(NULL);
+}
+
+void set_delay_time(time_t t)
+{
+	delay_time = t;
 }

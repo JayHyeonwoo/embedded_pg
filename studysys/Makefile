@@ -8,7 +8,7 @@ all: $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
-	ln -s $$(pwd)/$(TARGET) $$(pwd)/../$(TARGET)
+	ln -sf $$(pwd)/$(TARGET) $$(pwd)/../$(TARGET)
 
 dep: $(DEP)
 

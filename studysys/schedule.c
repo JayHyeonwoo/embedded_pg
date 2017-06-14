@@ -1,67 +1,25 @@
+#include <unistd.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 #include <stdlib.h>
 #include <termio.h>
 #include <time.h>
 
+/* user defined header files */
 #include <pthread.h>
 #include <comm.h>
 #include <devinfo.h>
-
-#include "schedule.h"
+#include <schedule.h>
 
 struct termios buffer, save;
 
-// int get_netif_status(int index);
-//	success : return 1
-
-
-/* static variable
-   	information list(struct) : char index;
-								int time;
-								char sub_name[19];
-								
-	count : current number of users , updated by syscall
-	constant value 
-
-   */
-
-
 int main(void)
 {
-    	pthread_t tid;
-	int err;
-
-    	broadcast_hello_packet();
-
-	/* create receiver, reognizer thread */
-	err = pthread_create(&tid, NULL, thr_receiver, NULL);
-	if (err) {
-	    fprintf(stderr, "Can't create thr_receiver thread: %s\n",
-		    strerror(err));
-	    exit(-1);
-	}
-
-	err = pthread_detach(tid);
-	if (err) {
-	    fprintf(stderr, "Can't detach thr_receiver thread: %s\n",
-		    strerror(err));
-	    exit(-1);
-	}
-
-	pthread_create(&tid, NULL, thr_recognizer, NULL);
-	if (err) {
-	    fprintf(stderr, "Can't create thr_recognizer thread: %s\n",
-		    strerror(err));
-	    exit(-1);
-	}
-
-	pthread_detach(tid);
-	if (err) {
-	    fprintf(stderr, "Can't detach thr_recognizer thread: %s\n",
-		    strerror(err));
-	    exit(-1);
+	if (comm_init() < 0) {
+		perror("comm_init error");
+		exit(-1);
 	}
 
 	int sel, i, status;
@@ -87,21 +45,7 @@ int main(void)
 
 			case 3: // 공부현황
 				// when information list, check mutex
-				for (i = 1; i <= 5; ++i) {
-				    status = get_netif_status(i);
-				    if (!status) {
-					continue;
-				    }
-
-				    pthread_mutex_lock(&information_list_lock);
-
-				    printf("%s %d %s\n", 
-					    index2ip(information_list[i].index),
-					    information_list[i].time,
-					    information_list[i].subject_name);
-					    
-				    pthread_mutex_unlock(&information_list_lock);
-				}
+				print_other_infos();
 				break;
 			default:
 				break;
@@ -112,11 +56,30 @@ int main(void)
 
 }
 
+void print_other_infos(void)
+{
+	struct information info;
+	time_t cur_time;
+	int i;
+
+	cur_time = time(NULL);
+	for (i = 0; i < DEVINFO_MAX; ++i) {
+		info.index = i;
+		get_other_info(&info);
+
+		if (info.rx_time + 10 < cur_time) {
+			continue;
+		}
+		printf("%s %s %lu\n", index2ip(info.index), info.subject_name,
+				info.time);
+	}
+}
+
 /*
    함수명 : int sel()
    함수 기능 : 메뉴에서 시스템이 어떤 기능을 할지 선택하는 함수.
    return 값: 메뉴에 대한 선택번호. (1,2,3,4 중에 하나 선택)
- */
+   */
 
 int menu_sel()
 {
@@ -151,7 +114,7 @@ int menu_sel()
    함수명 : int sel_seched()
    기능 : 일정관리 내에 등록과 변경을 고르게 하는 메뉴.
 
- */
+*/
 void menu_sched()
 {
 	while (1) {
@@ -236,7 +199,7 @@ void myflush()
    기능 : 일정 등록
    날짜 6자리(char)|과목수(int)|과목이름(char)|시간(char)| ... 이런식으로 schedule_info.txt 에 저장.
    리턴값 : 성공시 1 실패시 0
- */
+   */
 
 int register_sched()
 {
@@ -321,7 +284,7 @@ int register_sched()
 /*
    함수명 : void check_sched()
    기능 : sched_info.txt 에서 읽어들여서 전체의 일정을 출력한다
- */
+   */
 void check_sched()
 {
 	schedule tmp_sched[10000];
@@ -372,7 +335,7 @@ void check_sched()
    함수명 : int txt_read(schedule *a)
    기능 : txt 로 저장되어 있는 현재 과목일정들을 스케쥴구조체 a 에 저장하는 함수.
 return :  전체 스케줄 수 , 실패시 -1  반환.
- */
+*/
 
 int txt_read(schedule *a)
 {
@@ -398,7 +361,7 @@ int txt_read(schedule *a)
    함수명 : int txt_write(schedule *a,int n)
    기능 : n 개의 수만큼의 schedule 구조체를 지정된 형식으로 txt 에 쓰는 함수.
 return :  성공시 1 , 실패시 0 반환
- */
+*/
 
 int txt_write(schedule *a, int n)
 {
@@ -428,7 +391,7 @@ int txt_write(schedule *a, int n)
 /*
    함수명 : void re_align(schedule *a, int n)
    기능 : 전체의 일정을 시간순으로 재정렬하는 함수
- */
+   */
 void re_align(schedule *a, int n)
 {
 	schedule tmp;
@@ -461,7 +424,7 @@ void re_align(schedule *a, int n)
 /*
    함수명 : void check_sched_date()
    기능 : 날짜별일정확인.
- */
+   */
 void check_sched_date()
 {
 
@@ -521,7 +484,7 @@ void check_sched_date()
 /*
    함수명 : void delete_sched()
    기능 : 날짜별일정입력 받은 후 그 부분 수정.
- */
+   */
 
 void delete_sched()
 {
@@ -630,7 +593,7 @@ void delete_sched()
 /*
    함수명 : void change_sched()
    기능 : 날짜별일정입력 받은 후 그 부분 수정.
- */
+   */
 
 void change_sched()
 {
@@ -765,7 +728,7 @@ char getch()
 /*
    함수명 : void cur_subject(schedule *a,int n ,char *buf)
    기능 : 지금 공부하고 있는 과목을 알게하는 함수 buf 에다 현재 공부하고 있는 과목을 저장하게 됨.
- */
+   */
 
 void cur_subject(schedule *a,int n ,char *buf)
 {
@@ -822,7 +785,7 @@ void cur_subject(schedule *a,int n ,char *buf)
 /*
    함수명 : void output_schedtime(schedule *a, int n, char *buf)
    기능 : schedule 구조체에서 n개만큼의 전체 일정수를 받아서 각각 buf에 1706061545형태로 저장하기.
- */
+   */
 void output_schedtime(schedule *a, int n, char (*buf)[11])
 {
 	int i;

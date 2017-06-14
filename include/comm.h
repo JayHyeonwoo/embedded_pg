@@ -1,19 +1,15 @@
 #ifndef _COMM_H
 #define _COMM_H
 
-#include <stdint.h>
 #include <sys/types.h>
-#include "devinfo.h"
+#include <stdint.h>
+#include <syslog.h>
+
+/* user defined header files */
+#include <devinfo.h>
+#include <schedule.h>
 
 #define RX_PORT		9007
-#define TX_PORT		9006
-
-enum
-{
-	HELLO_PACKET,
-	DEAD_PACKET,
-	DATA_PACKET
-};
 
 struct sender_arg
 {
@@ -24,39 +20,46 @@ struct sender_arg
 };
 
 struct packet {
-    u_int8_t action;
     u_int8_t index;
     u_int32_t time;
-    char name[19];
+    char name[SUBJECT_NAME_MAX];
 
 };
 
 struct information {
-    char index;
-    int time;
-    char subject_name[19];
+    unsigned int index;
+    time_t time;
+    time_t rx_time;
+    char subject_name[SUBJECT_NAME_MAX];
 };
 
-/* global variables in receive.c */
-extern pthread_mutex_t information_list_lock;
+extern int comm_init(void);
 
-extern struct information information_list[256 - 2]; 
-
+/* defined in recognizer.c */
 extern void *thr_recognizer(void *);
 
+extern void set_delay_time(time_t);
+
+/* defined in sender.c */
 extern void *thr_sender(void *);
 
+/* defined in receiver.c */
 extern void *thr_receiver(void *);
 
-extern void update_netif_status(int, int);
+/* defined in comm.c */
+extern void unpack_packet(const struct packet *, struct information *);
 
-extern int get_netif_status(int);
+extern void pack_information(const struct information *, struct packet *);
 
-extern void broadcast_hello_packet(void);
+extern void update_infolist(const struct information *);
 
-extern void braodcast_dead_packet(void);
+extern void get_other_info(struct information *);
 
-struct packet make_packet(u_int8_t, u_int8_t, u_int32_t,
-		const char *);
+extern unsigned int self_index(void);
+
+extern void self_info(struct information *);
+
+#define func_syslog(PRIO, STR, ...) \
+	syslog((PRIO), "%s: "STR, __func__, __VA_ARGS__)
 
 #endif

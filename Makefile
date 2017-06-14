@@ -1,6 +1,7 @@
+PWD := $(shell pwd)
 KDIR ?=	/usr/src/linux
 CFLAGS := -W -Wall
-CPPFLAGS := -I$(KDIR)/include -I$(shell pwd)/include
+CPPFLAGS := -I$(KDIR)/include -I$(PWD)/include
 CROSS_COMPILE ?= 
 
 CC := $(CROSS_COMPILE)gcc
@@ -43,9 +44,13 @@ ultrasonic_wave:
 test:
 	$(MAKE) -C $@
 
+tags:
+	ctags -R
+
 clean:
+	$(RM) tags
 	$(MAKE) -C studysys clean
 	$(MAKE) -C ultrasonic_wave clean
 	$(MAKE) -C test clean
 
-.PHONY: all clean $(SUBDIRS)
+.PHONY: all clean $(SUBDIRS) tags

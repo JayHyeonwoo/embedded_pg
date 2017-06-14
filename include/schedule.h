@@ -1,14 +1,19 @@
 #ifndef _SCHEDULE_H
 #define _SCHEDULE_H
 
+#define DATA_MAX		7
+#define SUBJECT_NAME_MAX	20
+#define TIME_STR_MAX		5
+
 typedef struct schedule {
-	char date[7];
-	char name_sub[20];
-	char time[5];
+	char date[DATA_MAX];
+	char name_sub[SUBJECT_NAME_MAX];
+	char time[TIME_STR_MAX];
 } schedule;
 
 /*-------------------prototype---------------------*/
 
+void print_other_infos(void);
 int menu_sel();
 void myflush();
 void menu_sched();

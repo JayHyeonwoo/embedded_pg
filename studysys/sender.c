@@ -1,3 +1,5 @@
+#if 0
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -11,7 +13,7 @@
 #include <time.h>
 
 #include <schedule.h>
-#include "comm.h"
+#include <comm.h>
 
 static int self = 3;
 
@@ -65,3 +67,5 @@ void *thr_sender(void *arg)
 
     pthread_exit(NULL);
 }
+
+#endif
