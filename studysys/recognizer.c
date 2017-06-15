@@ -14,7 +14,7 @@
 #include <devinfo.h>
 #include <schedule.h>
 
-static time_t delay_time;
+static time_t delay_time = 5;
 static struct devinfo devinfos[DEVINFO_MAX];
 
 void *thr_recognizer(void *arg)
@@ -59,6 +59,7 @@ void *thr_recognizer(void *arg)
 
 		/* broadcast packet */
 		for (i = 0; i < ndev; ++i) {
+			func_syslog(LOG_DEBUG, "sendto: %s\n", devinfos[i].ip);
 			client_addr.sin_addr.s_addr= inet_addr(devinfos[i].ip);
 			/* send packet */
 			sendto(sockfd, &packet, sizeof(packet), 0,

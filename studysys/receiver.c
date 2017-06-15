@@ -37,6 +37,12 @@ void *thr_receiver(void *arg)
 	while(1) {
 		recvfrom(sock, &packet, sizeof(packet), 0, NULL, NULL);
 		unpack_packet(&packet, &info);
+		func_syslog(LOG_DEBUG, 
+				"receive from %s: subject=%s, time=%lu\n",
+			       	index2ip(info.index),
+				info.subject_name,
+				info.time);
+
 		info.rx_time = time(NULL);
 		update_infolist(&info);
 	}
