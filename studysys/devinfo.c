@@ -25,21 +25,12 @@ static struct devinfo arptbl[] = {
 	{ .mac = "64:e5:99:fa:1d:61", .ip = "192.168.2.4"},
 };
 
-#ifndef DEBUG
 const char *batctl_path = "/usr/local/sbin/batctl";
 char *const batctl_args[] = {
 	"batctl",
 	"n",
 	(char *)0
 };
-#else
-const char *batctl_path = "/bin/cat";
-char *const batctl_args[] = {
-	"cat",
-	"testcase.txt",
-	(char *)0
-};
-#endif
 
 /*
  * MAC주소에서 IP주소를 얻는 함수
@@ -87,6 +78,7 @@ long parsebat(int fd, long maxdev, struct devinfo *devinfo)
  */
 long getdevinfo(long maxdev, struct devinfo *devinfo)
 {
+	const char *ip;
 	int fds[2], stat;
 	long ndev, i;
 	pid_t pid;
@@ -122,7 +114,11 @@ long getdevinfo(long maxdev, struct devinfo *devinfo)
 
 	/* MAC 주소에 따라 IP주소 찾기 */
 	for (i = 0; i < ndev; ++i) {
-		strcpy(devinfo[i].ip, mac2ip(devinfo[i].mac));
+		ip = mac2ip(devinfo[i].mac);
+		if (ip == NULL) {
+			return -1;
+		}
+		strcpy(devinfo[i].ip, ip);
 	}
 
 	return ndev;
