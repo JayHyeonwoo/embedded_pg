@@ -55,7 +55,7 @@ char *index2ip(int id)
 
 int ip2index(const char *ip)
 {
-	return ip[IP_NAME_MAX - 2] - '0';
+	return ip[strlen(ip) - 1] - '0';
 }
 
 /*
