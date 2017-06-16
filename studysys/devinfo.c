@@ -1,5 +1,6 @@
 #include <linux/unistd.h>
 #include <sys/wait.h>
+#include <errno.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -110,6 +111,10 @@ long getdevinfo(long maxdev, struct devinfo *devinfo)
 	close(fds[1]);
 	ndev = parsebat(fds[0], maxdev, devinfo);
 	waitpid(pid, &stat, 0);
+	if (ndev < 0) {
+		errno = -ndev;
+		return -1;
+	}
 
 	/* MAC 주소에 따라 IP주소 찾기 */
 	for (i = 0; i < ndev; ++i) {

@@ -1,6 +1,10 @@
 $(DEP) := .dep
 
-all:
+
+%: %.c
+	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS) $(LDFLAGS)
+
+all: getdevinfo_test
 
 dep: $(DEP)
 
@@ -8,7 +12,7 @@ $(DEP): $(SRCS)
 	$(CC) -MM $(CPPFLAGS) $^ > $@
 
 clean:
-	$(RM) $(OBJS) $(DEP) $(TARGETS)
+	$(RM) $(OBJS) $(DEP) $(TARGETS) *.o
 
 include $(DEP)
 

@@ -1,9 +1,10 @@
+#include <arpa/inet.h>
+#include <netinet/in.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <string.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
+#include <ifaddrs.h>
 #include <pthread.h>
+#include <string.h>
 
 /* user defined header files */
 #include <comm.h>
@@ -13,12 +14,19 @@
 static unsigned int self_idx;
 static pthread_mutex_t information_list_lock = PTHREAD_MUTEX_INITIALIZER;
 static struct information information_list[DEVINFO_MAX];
-static size_t alive_info;
+
+static int self_index_init(void);
 
 int comm_init(void)
 {
 	pthread_t tid;
 	int err;
+
+	if (self_index_init() < 0) {
+		return -1;
+	}
+
+	func_syslog(LOG_INFO, "%s", index2ip(self_index()));
 
 	/* create receiver, reognizer thread */
 	err = pthread_create(&tid, NULL, thr_receiver, NULL);
@@ -43,6 +51,28 @@ int comm_init(void)
 
 	return 0;
 
+}
+
+static int self_index_init(void)
+{
+	struct ifaddrs *ifap, *ifa;
+	struct sockaddr_in *sa;
+	char *addr;
+
+	getifaddrs(&ifap);
+	for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next) {
+		if (ifa->ifa_addr->sa_family == AF_INET &&
+				strcmp(ifa->ifa_name, "bat0") == 0) {
+			sa = (struct sockaddr_in *)ifa->ifa_addr;
+			addr = inet_ntoa(sa->sin_addr);
+			self_idx = ip2index(addr);
+			freeifaddrs(ifap);
+			return 0;
+		}
+	}
+
+	freeifaddrs(ifap);
+	return -1;
 }
 
 void unpack_packet(const struct packet *packet, struct information *info)
@@ -86,6 +116,9 @@ void self_info(struct information *info)
 {
 	static schedule scheds[1000];
 	int nsched;
+
+	(void)scheds;
+	(void)nsched;
 
 	info->index = self_index();
 	strcpy(info->subject_name, "subject");

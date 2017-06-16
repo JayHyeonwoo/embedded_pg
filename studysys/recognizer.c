@@ -3,6 +3,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <errno.h>
+#include <unistd.h>
 #include <time.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,7 +15,7 @@
 #include <devinfo.h>
 #include <schedule.h>
 
-static time_t delay_time = 5;
+static time_t delay_time = 1;
 static struct devinfo devinfos[DEVINFO_MAX];
 
 void *thr_recognizer(void *arg)
@@ -31,8 +32,9 @@ void *thr_recognizer(void *arg)
 	syslog(LOG_DEBUG, "thr_recognizer is created\n");
 	if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
 		func_syslog(LOG_ERR, "socket error: %s\n", strerror(errno));
-		pthread_exit((void *)errno);
+		pthread_exit(NULL);
 	}
+
 
 	/* setup client_addr except ip */
 	memset(&client_addr, 0, sizeof(client_addr));
@@ -41,17 +43,11 @@ void *thr_recognizer(void *arg)
 
 	retrieve_time = 0;
 	for ( ; ; ) {
-		/* time check */
-		if (retrieve_time + delay_time > time(NULL)) {
-			continue;
-		}
-		retrieve_time = time(NULL);
-
 		/* retrieve network interface informations */
 		if ((ndev = getdevinfo(DEVINFO_MAX, devinfos)) < 0) {
 			func_syslog(LOG_ERR, "getdevinfo error: %s\n",
 				       	strerror(errno));
-			pthread_exit((void *)errno);
+			goto out;
 		}
 
 		self_info(&info);
@@ -62,12 +58,14 @@ void *thr_recognizer(void *arg)
 			func_syslog(LOG_DEBUG, "sendto: %s\n", devinfos[i].ip);
 			client_addr.sin_addr.s_addr= inet_addr(devinfos[i].ip);
 			/* send packet */
-			sendto(sockfd, &packet, sizeof(packet), 0,
+			sendto(sockfd, &packet, sizeof(packet), MSG_DONTWAIT,
 					(struct sockaddr *) &client_addr,
 					sizeof(client_addr));
 		}
 	}
 
+out:
+	close(sockfd);
 	pthread_exit(NULL);
 }
 

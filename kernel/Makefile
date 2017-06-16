@@ -1,15 +1,15 @@
 KDIR ?=	/usr/src/linux
 
-all: cpfiles
+all: install 
 
-cpfiles: $(KDIR)/kernel/parsebat.c \
-	$(KDIR)/include/linux/devinfo.h
+install: $(KDIR)/kernel/parsebat.c \
+	$(KDIR)/include/linux/parsebat.h
 
 $(KDIR)/kernel/parsebat.c: parsebat.c
 	cp parsebat.c $(KDIR)/kernel
 
-$(KDIR)/include/linux/devinfo.h: devinfo.h
-	cp devinfo.h $(KDIR)/include/linux
+$(KDIR)/include/linux/parsebat.h: parsebat.h
+	cp parsebat.h $(KDIR)/include/linux
 
 
-.PHONY: all cpfiles
+.PHONY: all install

@@ -1,6 +1,7 @@
 #include <asm/unistd.h>
 #include <asm/uaccess.h>
 #include <asm/processor.h>
+#include <linux/errno.h>
 #include <linux/fs.h>
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -9,6 +10,10 @@
 #include <linux/limits.h>
 
 #include <linux/parsebat.h>
+
+static inline int fd_err(void);
+static inline int fd_eof(void);
+static inline int fd_ok(void);
 
 /* 
  * buf는 fd로부터 읽어온 데이터를 버퍼링한다 
@@ -22,10 +27,42 @@ static off_t bufsize = 0;
 /* offset은 하단에 정의된 문자 처리 함수에 의해 조정되는 오프셋 */
 static off_t offset = 0;
 
+static unsigned int state;
+
+enum {
+	BUF_OK,
+	BUF_EOF,
+	BUF_ERR
+};
+
 static inline void parsebat_reset(void)
 {
 	bufsize = 0;
 	offset = 0;
+	state = BUF_OK;
+}
+
+/* 
+ * Return
+ * fd가 읽기 오류이면 1, 아니면 0을 리턴
+ */
+static inline int fd_err(void)
+{
+	return state == BUF_ERR;
+}
+
+/*
+ * Return
+ * fd가 더 이상 읽을 문자가 없다면 1, 아니면 0을 리턴
+ */
+static inline int fd_eof(void)
+{
+	return state == BUF_EOF;
+}
+
+static inline int fd_ok(void)
+{
+	return state == BUF_OK;
 }
 
 /* 
@@ -39,31 +76,24 @@ static inline void parsebat_reset(void)
  */
 static inline int getchar_from_fd(int fd)
 {
+	if (!fd_ok()) {
+		return -1;
+	}
+
 	/* buf의 모든 데이터를 읽었기에 fd로부터 다시 읽음 */
 	if (offset == bufsize) {
 		bufsize = sys_read(fd, buf, sizeof buf);
+		if (bufsize == 0) {
+			state = BUF_EOF;
+			return -1;
+		} else if (bufsize < 0) {
+			state = BUF_ERR;
+			return -1;
+		}
 		offset = 0;
 	}
 
-	return bufsize == 0 || bufsize == -1 ? -1 : buf[offset++];
-}
-
-/* 
- * Return
- * fd가 읽기 오류이면 1, 아니면 0을 리턴
- */
-static inline int fd_err(void)
-{
-	return bufsize == -1;
-}
-
-/*
- * Return
- * fd가 더 이상 읽을 문자가 없다면 1, 아니면 0을 리턴
- */
-static inline int fd_eof(void)
-{
-	return bufsize == 0;
+	return buf[offset++];
 }
 
 /*
@@ -148,36 +178,42 @@ SYSCALL_DEFINE3(parsebat, int, fd, long, maxdev,
 
 	/* 첫 두 줄은 무시한다 */
 	skip_line(fd, 2);
-	if (fd_err()) {
-		printk("sys_read: error\n");
-		goto errout;
-	} else if (fd_eof()) {
-		goto ret;
+	if (!fd_ok()) {
+		if (fd_err()) {
+			ndev = bufsize;
+		}
+		goto out;
 	}
 
 	/* 최대 maxdev만큼을 검색 */
-	for (; ndev < maxdev; ndev++) {
+	while (ndev < maxdev) {
 		skip_space(fd);
 		if (fd_err()) {
-			printk("sys_read: error\n");
-			goto errout;
+			ndev = bufsize;
+			break;
 		} else if (fd_eof()) {
+			printk("err1\n");
+			ndev = -EINVAL;
 			break;
 		}
 
 		skip_nospace(fd);
 		if (fd_err()) {
-			printk("sys_read: error\n");
-			goto errout;
+			ndev = bufsize;
+			break;
 		} else if (fd_eof()) {
+			printk("err2\n");
+			ndev = -EINVAL;
 			break;
 		}
 
 		skip_space(fd);
 		if (fd_err()) {
-			printk("sys_read: error\n");
-			goto errout;
+			ndev = bufsize;
+			break;
 		} else if (fd_eof()) {
+			printk("err3\n");
+			ndev = -EINVAL;
 			break;
 		}
 
@@ -185,23 +221,29 @@ SYSCALL_DEFINE3(parsebat, int, fd, long, maxdev,
 		for (i = 0; i < sizeof devinfo[0].mac - 1; ++i) {
 			ch = getchar_from_fd(fd);
 			if (fd_err()) {
-				printk("sys_read: error\n");
-				goto errout;
+				ndev = bufsize;
+				goto out;
 			} else if (fd_eof()) {
-				goto ret;
+				printk("err4\n");
+				ndev = -EINVAL;
+				goto out;
 			}
 
 			devinfo[ndev].mac[i] = ch;
 		}
 		devinfo[ndev].mac[sizeof devinfo[0].mac - 1] = '\0';
+		ndev++;
 		skip_line(fd, 1);
+		getchar_from_fd(fd);
+		if (fd_err()) {
+			ndev = bufsize;
+			break;
+		} else if (fd_eof()) {
+			break;
+		}
 	}
 
-ret:
+out:
 	set_fs(oldfs);
 	return ndev;
-
-errout:
-	set_fs(oldfs);
-	return -1;
 }
