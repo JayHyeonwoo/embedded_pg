@@ -1,7 +1,7 @@
 PWD := $(shell pwd)
 KDIR ?=	/usr/src/linux
 CFLAGS := -W -Wall
-CPPFLAGS := -I$(KDIR)/include -I$(PWD)/include
+CPPFLAGS := -I$(PWD)/include -I/$(PWD)/kernel
 CROSS_COMPILE ?= 
 
 CC := $(CROSS_COMPILE)gcc

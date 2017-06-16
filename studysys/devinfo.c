@@ -1,12 +1,11 @@
 #include <linux/unistd.h>
-#include <linux/devinfo.h>
 #include <sys/wait.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "devinfo.h"
+#include <devinfo.h>
 
 #ifdef ARM
 #define __NR_parsebat	397

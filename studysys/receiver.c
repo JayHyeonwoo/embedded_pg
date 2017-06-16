@@ -27,7 +27,7 @@ void *thr_receiver(void *arg)
 	memset(&server_addr, 0, sizeof(server_addr));
 	server_addr.sin_family      = AF_INET;
 	server_addr.sin_port        = htons(RX_PORT);
-	server_addr.sin_addr.s_addr = INADDR_ANY;
+	server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	if( -1 == bind(sock, (struct sockaddr*)&server_addr, sizeof(server_addr) ) )
 	{
 		func_syslog(LOG_ERR, "bind error: %s\n", strerror(errno));

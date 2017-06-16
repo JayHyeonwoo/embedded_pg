@@ -1,7 +1,7 @@
 #ifndef _DEVINFO_H
 #define _DEVINFO_H
 
-#include <linux/devinfo.h>
+#include <parsebat.h>
 
 long parsebat(int fd, long maxdev, struct devinfo *devinfo);
 

@@ -8,7 +8,7 @@
 #include <linux/sched.h>
 #include <linux/limits.h>
 
-#include <linux/devinfo.h>
+#include <linux/parsebat.h>
 
 /* 
  * buf는 fd로부터 읽어온 데이터를 버퍼링한다 
@@ -21,6 +21,12 @@ static off_t bufsize = 0;
 
 /* offset은 하단에 정의된 문자 처리 함수에 의해 조정되는 오프셋 */
 static off_t offset = 0;
+
+static inline void parsebat_reset(void)
+{
+	bufsize = 0;
+	offset = 0;
+}
 
 /* 
  * fd에서 문자 하나를 읽는다
@@ -70,6 +76,8 @@ static inline int isspace(int ch)
 		case '\n':
 		case ' ':
 		case '\t':
+		case '\v':
+		case '\r':
 			return 1;
 		default:
 			return 0;
@@ -131,6 +139,8 @@ SYSCALL_DEFINE3(parsebat, int, fd, long, maxdev,
 	mm_segment_t oldfs;
 	long ndev = 0;
 	int ch, i;
+
+	parsebat_reset();
 
 	/* Backup address limit */
 	oldfs = get_fs();
