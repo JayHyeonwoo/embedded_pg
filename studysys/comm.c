@@ -122,10 +122,12 @@ void self_info(struct information *info)
 	int nsched;
 
 	info->index = self_index();
-	strcpy(info->subject_name, "subject");
-	info->time = 10;
 	nsched = txt_read(scheds);
 	cur_subject(scheds, nsched, &info->subject_name);
-	info->time = htonl(get_total_min());
+#ifdef CONFIG_ULTRAWAVE
+	info->time = get_total_min();
+#else
+	info->time = 10;
+#endif
 }
 

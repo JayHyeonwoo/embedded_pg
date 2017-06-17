@@ -193,7 +193,9 @@ def sigusr1_handler(signum, frame):
 	global is_cur_bright_changed
 	global is_person_here
 
+        print("sigusr1_handler")
 	with open("/tmp/fifo_light", 'r') as f:
+                print("in open")
 		alist = f.read()
 	print("fifo!")
 	print(alist)
@@ -263,6 +265,7 @@ def handle_user_input():
 	time.sleep(2)
 #	set_bright(1, 100)	
 	while True:
+                print("while")
 		if is_person_here == 0:
 			time.sleep(10)
 			continue

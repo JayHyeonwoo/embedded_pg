@@ -9,13 +9,14 @@ all: $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
+	ln -sfr $@ ../$@
 
 dep: $(DEP)
 
 $(DEP): $(SRCS)
 	$(CC) -MM $(CPPFLAGS) $^ > $@
 clean:
-	$(RM) $(TARGET) $(OBJS) $(DEP)
+	$(RM) $(TARGET) $(OBJS) $(DEP) ../$(TARGET)
 
 include $(DEP)
 

@@ -23,6 +23,10 @@ else
 	CPPFLAGS += -DX86
 endif
 
+ifeq ($(CONFIG_ULTRAWAVE),y)
+	CPPFLAGS += -DCONFIG_ULTRAWAVE
+endif
+
 export ARCH
 export CFLAGS
 export CPPFLAGS

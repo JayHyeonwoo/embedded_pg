@@ -11,6 +11,8 @@
 #include <wiringPi.h>
 #include <ctype.h>
 
+#include <comm.h>
+
 #define FIFO_LIGHT "/tmp/fifo_light"
 #define FIFO_REQUIRED_TIME "/tmp/fifo_required_time"
 
@@ -90,7 +92,8 @@ int main(void)
 		long travelTime = micros() - startTime;
 
 		int distance = travelTime / 58;
-//		printf("Distance: %dcm\n", distance);
+		func_syslog(LOG_DEBUG, "Distance: %dcm\n", distance);
+
 
 		if (distance < 80.0)
 		{
@@ -127,8 +130,9 @@ int main(void)
 					}
 					else if (child_pid == 0)
 					{
-						execl("./project", "./project", NULL);
+						execl("./study_system", "./study_system", NULL);
 //						execl(PROJECT_EXEC_PATH, PROJECT_EXEC_PATH, NULL);
+//
 						exit(0);
 					}
 					gettimeofday(&tv_start, NULL);

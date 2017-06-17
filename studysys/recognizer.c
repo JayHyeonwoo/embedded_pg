@@ -43,6 +43,12 @@ void *thr_recognizer(void *arg)
 
 	retrieve_time = 0;
 	for ( ; ; ) {
+		/* time checking */
+		if (retrieve_time + delay_time > time(NULL)) {
+			continue;
+		}
+		retrieve_time = time(NULL);
+
 		/* retrieve network interface informations */
 		if ((ndev = getdevinfo(DEVINFO_MAX, devinfos)) < 0) {
 			func_syslog(LOG_ERR, "getdevinfo error: %s\n",

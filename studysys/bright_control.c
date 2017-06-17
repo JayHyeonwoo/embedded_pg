@@ -317,9 +317,8 @@ int get_total_min()
 {
 	int pid;
 	char buf[20];
-	printf("hi\n");
 
-	if ((pid = get_process_id("ultrasonic_wave")) < 0)
+	if ((pid = get_process_id("ultrasonic")) < 0)
 	{
 		fprintf(stderr, "no pid\n");
 		return -1;
@@ -343,7 +342,7 @@ int get_total_min()
 	}
 	buf[len] = '\0';
 
-	printf("get_total_min : %s\n", buf);
+	close(fd);
 	return atoi(buf);
 }
 
@@ -363,7 +362,6 @@ int get_process_id(char *proc_name)
 		return -1;
 	}
 
-	printf("hello\n");
 	int is_pid_dir;
 	int i;
 	char buf[BUF_SIZE];

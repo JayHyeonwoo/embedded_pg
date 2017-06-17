@@ -66,7 +66,7 @@ void print_other_infos(void)
     n = 1;
     cur_time = time(NULL);
     printf("n	ip		subject		time\n");
-    printf("----------------------------------------\n");
+    printf("--------------------------------------------\n");
     for (i = 0; i < DEVINFO_MAX; ++i) {
 	info.index = i;
 	get_other_info(&info);
@@ -74,7 +74,7 @@ void print_other_infos(void)
 	if (info.rx_time + 10 < cur_time) {
 	    continue;
 	}
-	printf("%d	%s	%s		%lu\n",
+	printf("%d	%s	%s		%lumin\n",
 		n,
 		index2ip(info.index), 
 		info.subject_name,
