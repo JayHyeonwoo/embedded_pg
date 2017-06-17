@@ -779,14 +779,21 @@ void cur_subject(schedule *a,int n ,char *buf)
 
     for(i = 0 ; i < n ; i++)
     {
-	if(strcmp(sched_time[i],nowtime)<0);
-	else
-	{
-	    now=i-1; //현재 공부하고 있는 일정을 찾음
-	    break;
-	}
+		if(strcmp(sched_time[i],nowtime) <= 0);
+		else
+		{
+			now = i - 1; //현재 공부하고 있는 일정을 찾음
+			break;
+		}
 
-    }
+	}
+	if (i >= n)
+		now = n - 1;
+	if (i == 0)
+		strcpy(buf, "NOTHING");
+	else
+		strcpy(buf, tmp_sched[now].name_sub);
+
     strcpy(buf,tmp_sched[now].name_sub); //현재 일정중에서 과목을 복사.
     printf("%s\n",buf);
 }
