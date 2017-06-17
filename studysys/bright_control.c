@@ -200,7 +200,8 @@ int set_current_light_bright()
 		}
 	}
 	int light_pid;
-	if ((light_pid = get_light_proc_pid()) < 0)
+//	if ((light_pid = get_light_proc_pid()) < 0)
+	if ((light_pid = get_process_id("esp_lightWifiBu")) < 0)
 	{
 		fprintf(stderr , "There is NO light_process\n");
 		exit(1);

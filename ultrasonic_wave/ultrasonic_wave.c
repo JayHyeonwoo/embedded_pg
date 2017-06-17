@@ -17,7 +17,7 @@
 #define FIFO_REQUIRED_TIME "/tmp/fifo_required_time"
 
 #define LIGHT_PROC_NAME "esp_lightWifiBulbLanCtrl.py"
-#define PROJECT_EXEC_PATH "./project"
+#define PROJECT_EXEC_PATH "./studysys"
 
 #define BUF_SIZE 1024
 #define STUDYING_NUM 10
@@ -26,8 +26,9 @@
 #define echoPin 4
 
 int send_sigusr1_and_fifo(int pid, char *buf);
-int get_light_proc_pid();
+//int get_light_proc_pid();
 void sigusr1_handler(int signo);
+int get_process_id(char *proc_name);
 
 int child_pid;
 
@@ -60,7 +61,8 @@ int main(void)
 		}
 	}
 
-	int light_pid = get_light_proc_pid();
+//	int light_pid = get_light_proc_pid();
+	int light_pid = get_process_id("esp_lightWifiBu");
 	printf("light_pid : %d\n", light_pid);
 
 	int distance = 0;
@@ -121,7 +123,6 @@ int main(void)
 				{
 					send_sigusr1_and_fifo(light_pid, "ON");
 
-//					printf("exec\n");
 
 					if ((child_pid = fork()) < 0)
 					{
@@ -131,8 +132,6 @@ int main(void)
 					else if (child_pid == 0)
 					{
 						execl("./study_system", "./study_system", NULL);
-//						execl(PROJECT_EXEC_PATH, PROJECT_EXEC_PATH, NULL);
-//
 						exit(0);
 					}
 					gettimeofday(&tv_start, NULL);
@@ -144,8 +143,8 @@ int main(void)
 				if (is_studying == 1)
 				{
 					send_sigusr1_and_fifo(light_pid, "OFF");
+
 					kill(child_pid, SIGUSR1);
-					//printf("send sigusr1 : %d\n", child_pid);
 
 					gettimeofday(&tv_end, NULL);
 					total_sec += (tv_end.tv_sec -tv_start.tv_sec);
@@ -165,14 +164,26 @@ int main(void)
 // sending signal
 int send_sigusr1_and_fifo(int pid, char *buf)
 {
+	if (kill(pid, SIGUSR1) != 0)
+	{
+		printf("Can't kill\n");
+	}
+	sleep(1);
+
 	FILE *fifo_fp;
-	if ((fifo_fp = fopen(FIFO_LIGHT, "w")) == NULL)
+	printf("send sigusr1 & fifo\n");
+
+	if ((fifo_fp = fopen(FIFO_LIGHT, "w+")) == NULL)
 	{
 		fprintf(stderr, "open error for %s\n", FIFO_LIGHT);
 		exit(1);
 	}
-	fprintf(fifo_fp, "%s", buf);
+
+ 	fprintf(fifo_fp, "%s", buf);
+
 	fclose(fifo_fp);
+	printf("after send sigusr1 & fifo\n");
+
 
 //	sleep(1);
 //	while (kill(pid, SIGUSR1) != 0)
@@ -180,14 +191,113 @@ int send_sigusr1_and_fifo(int pid, char *buf)
 //		printf("no kill signal\n");
 //		sleep(1);
 //	}
-	kill(pid, SIGUSR1);
-
 
 	return 0;
 }
 
 // Light 프로세스의 pid를 얻는 함수
-int get_light_proc_pid(void)
+//int get_light_proc_pid(void)
+//{
+//	int pid;
+//	DIR *dirp;
+//	struct dirent *dir_entry;
+//
+//	char path[BUF_SIZE];
+//	strcpy(path, "/proc/");
+//
+//	if ((dirp = opendir(path)) == NULL)
+//	{
+//		fprintf(stderr, "opendir error for %s\n", path);
+//		return -1;
+//	}
+//
+//	int is_pid_dir;
+//	int i;
+//	char buf[BUF_SIZE];
+//	char tmp1[BUF_SIZE/2];
+//	char tmp2[BUF_SIZE/2];
+//
+//	// /proc 디릭터리 하위의 pid로 명명된 디렉터리들을 확인한다.
+//	while((dir_entry = readdir(dirp)) != NULL)
+//	{
+//		is_pid_dir = 1;
+//
+//		// 디렉터리의 이름이 모두 숫자로 이루어져있는지 확인한다.
+//		for (i = 0; i < (int) strlen(dir_entry -> d_name); i++)
+//		{
+//			if (!isdigit(dir_entry -> d_name[i]))
+//			{
+//				is_pid_dir = 0;
+//				break;
+//			}
+//		}
+//		if (!is_pid_dir)
+//			continue;
+//
+//		// /proc/[pid]/cmdline 파일에서 해당 프로세스의 이름을 확인한다.
+//		pid = atoi(dir_entry -> d_name);
+//
+//		strcat(path, dir_entry -> d_name);
+//		strcat(path, "/cmdline");
+//		
+//		//printf("path : %s\n",path);
+//
+//
+//		int fd;
+//		if ((fd = open(path, O_RDONLY)) < 0)
+//		{
+//			fprintf(stderr, "open error for %s\n", path);
+//			return -1;
+//		}
+//
+//		int argCount = 0;
+//		int ch;
+//		while(read(fd, &ch, 1) > 0)
+//		{
+//			buf[i++] = ch;
+//			if(ch == '\0')				// NULL로 argv를 구분하여 출력한다.
+//			{
+//				if (argCount == 1)
+//				{
+//					if (strcmp(buf, LIGHT_PROC_NAME) == 0)
+//					{
+//						//printf("\npid : %d\n", pid);
+//						return pid;
+//					}
+//					else
+//						break;
+//
+//				}
+////				printf("argv[%d] : %s\n", argCount++, buf);
+//				i = 0;	
+//				argCount++;
+//			}
+//		}
+//		strcpy(path, "/proc/");
+//	}
+//	return -1;
+//}
+
+void sigusr1_handler(int signo)
+{
+	int fd;
+	char buf[20];
+	if ((fd = open(FIFO_REQUIRED_TIME, O_WRONLY)) < 0)
+	{
+		fprintf(stderr, "open error for %s\n", FIFO_REQUIRED_TIME);
+		exit(1);
+	}
+
+	gettimeofday(&tv_end, NULL);
+	total_sec += (tv_end.tv_sec -tv_start.tv_sec);
+	gettimeofday(&tv_start, NULL);
+
+	sprintf(buf, "%d", total_sec / 60);
+	write(fd, buf, strlen(buf));
+	close(fd);
+}
+
+int get_process_id(char *proc_name)
 {
 	int pid;
 	DIR *dirp;
@@ -222,68 +332,36 @@ int get_light_proc_pid(void)
 				break;
 			}
 		}
-		if (!is_pid_dir)
+		if (!is_pid_dir)	// pid로 명명되지 않으면 다음 디렉터리로 넘어간다.
 			continue;
 
-		// /proc/[pid]/cmdline 파일에서 해당 프로세스의 이름을 확인한다.
+		// /proc/[pid]/status 파일에서 해당 프로세스의 이름을 확인한다.
 		pid = atoi(dir_entry -> d_name);
-
+		strcpy(path, "/proc/");
 		strcat(path, dir_entry -> d_name);
-		strcat(path, "/cmdline");
+		strcat(path, "/status");
 		
-		//printf("path : %s\n",path);
+//		printf("path : %s\n", path);
 
-
-		int fd;
-		if ((fd = open(path, O_RDONLY)) < 0)
+		FILE *fp;
+		if ((fp = fopen(path, "r")) == NULL)
 		{
-			fprintf(stderr, "open error for %s\n", path);
+			fprintf(stderr, "fopen error for %s\n", path);
 			return -1;
 		}
 
-		int argCount = 0;
-		int ch;
-		while(read(fd, &ch, 1) > 0)
+		// 프로세스의 이름이 'proc_name' 인지 확인한다.
+		while (fgets(buf, BUF_SIZE, fp) != NULL)
 		{
-			buf[i++] = ch;
-			if(ch == '\0')				// NULL로 argv를 구분하여 출력한다.
-			{
-				if (argCount == 1)
-				{
-					if (strcmp(buf, LIGHT_PROC_NAME) == 0)
-					{
-						//printf("\npid : %d\n", pid);
-						return pid;
-					}
-					else
-						break;
+			sscanf(buf, "%s\t%s", tmp1, tmp2);
+			if (strcmp(tmp1, "Name:") != 0)
+				continue;
 
-				}
-//				printf("argv[%d] : %s\n", argCount++, buf);
-				i = 0;	
-				argCount++;
-			}
+			if (strcmp(tmp2, proc_name) == 0)
+				return pid;
+			else 
+				break;
 		}
-		strcpy(path, "/proc/");
 	}
 	return -1;
-}
-
-void sigusr1_handler(int signo)
-{
-	int fd;
-	char buf[20];
-	if ((fd = open(FIFO_REQUIRED_TIME, O_WRONLY)) < 0)
-	{
-		fprintf(stderr, "open error for %s\n", FIFO_REQUIRED_TIME);
-		exit(1);
-	}
-
-	gettimeofday(&tv_end, NULL);
-	total_sec += (tv_end.tv_sec -tv_start.tv_sec);
-	gettimeofday(&tv_start, NULL);
-
-	sprintf(buf, "%d", total_sec / 60);
-	write(fd, buf, strlen(buf));
-	close(fd);
 }

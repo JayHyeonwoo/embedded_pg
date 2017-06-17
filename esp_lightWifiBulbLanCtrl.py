@@ -194,7 +194,7 @@ def sigusr1_handler(signum, frame):
 	global is_person_here
 
         print("sigusr1_handler")
-	with open("/tmp/fifo_light", 'r') as f:
+	with open("/tmp/fifo_light") as f:
                 print("in open")
 		alist = f.read()
 	print("fifo!")

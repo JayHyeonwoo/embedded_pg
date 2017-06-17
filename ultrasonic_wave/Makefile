@@ -15,6 +15,7 @@ dep: $(DEP)
 
 $(DEP): $(SRCS)
 	$(CC) -MM $(CPPFLAGS) $^ > $@
+
 clean:
 	$(RM) $(TARGET) $(OBJS) $(DEP) ../$(TARGET)
 

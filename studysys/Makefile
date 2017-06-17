@@ -4,7 +4,7 @@ OBJS := $(patsubst %.c, %.o, $(SRCS))
 LDFLAGS := -lpthread
 DEP := .dep
 
-all: $(TARGET)
+all: dep $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
