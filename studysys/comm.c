@@ -121,14 +121,11 @@ void self_info(struct information *info)
 	static schedule scheds[1000];
 	int nsched;
 
-	(void)scheds;
-	(void)nsched;
-
 	info->index = self_index();
 	strcpy(info->subject_name, "subject");
 	info->time = 10;
-	//nsched = txt_read(scheds);
-	//cur_subject(scheds, nsched, packet.name);
-	//packet.time = htonl(get_total_min());
+	nsched = txt_read(scheds);
+	cur_subject(scheds, nsched, &info->subject_name);
+	info->time = htonl(get_total_min());
 }
 

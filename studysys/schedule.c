@@ -793,9 +793,6 @@ void cur_subject(schedule *a,int n ,char *buf)
 		strcpy(buf, "NOTHING");
 	else
 		strcpy(buf, tmp_sched[now].name_sub);
-
-    strcpy(buf,tmp_sched[now].name_sub); //현재 일정중에서 과목을 복사.
-    printf("%s\n",buf);
 }
 
 
