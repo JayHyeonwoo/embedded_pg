@@ -91,18 +91,22 @@ void pack_information(const struct information *info, struct packet *packet)
 
 void update_infolist(const struct information *info)
 {
+	int index = info->index;
+
 	pthread_mutex_lock(&information_list_lock);
 
-	information_list[info->index] = *info;
+	information_list[index] = *info;
 
 	pthread_mutex_unlock(&information_list_lock);
 }
 
 void get_other_info(struct information *info)
 {
+	int index = info->index;
+
 	pthread_mutex_lock(&information_list_lock);
 
-	*info = information_list[info->index];
+	*info = information_list[index];
 
 	pthread_mutex_unlock(&information_list_lock);
 }

@@ -70,7 +70,9 @@ void print_other_infos(void)
 		if (info.rx_time + 10 < cur_time) {
 			continue;
 		}
-		printf("%s %s %lu\n", index2ip(info.index), info.subject_name,
+		printf("%s %s %lu\n", 
+				index2ip(info.index), 
+				info.subject_name,
 				info.time);
 	}
 }
