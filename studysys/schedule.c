@@ -18,42 +18,41 @@ struct termios buffer, save;
 int main(void)
 {
     if (comm_init() < 0) {
-	perror("comm_init error");
-	exit(-1);
+		perror("comm_init error");
+		exit(-1);
     }
 
     int sel, i, status;
     system("clear");
-    printf("Hello Sydney\n");
+    printf("반가워요!!\n");
     sleep(1);
 
     while (1)
     {
-	sel = menu_sel();
-	switch (sel)
-	{
-	    case 1: // 일정관리
+		sel = menu_sel();
+		switch (sel)
+		{
+			case 1: // 일정관리
 
-		menu_sched();
+				menu_sched();
 
-		break;
+				break;
 
-	    case 2: // 조명설정
-		select_bright_menu();
-		break;
+			case 2: // 조명설정
+				select_bright_menu();
+				break;
 
 
-	    case 3: // 공부현황
-		// when information list, check mutex
-		system("clear");
-		print_other_infos();
-		break;
-	    default:
-		break;
-	}
+			case 3: // 공부현황
+				// when information list, check mutex
+				system("clear");
+				print_other_infos();
+				break;
+			default:
+				break;
+		}
 
     }
-
 
 }
 
@@ -81,6 +80,7 @@ void print_other_infos(void)
 		info.time);
     }
 
+	printf("아무 버튼이나 누르세요\n");
     myflush();
     ch = getch();
 }
@@ -102,22 +102,22 @@ int menu_sel()
 
     int sel, res;
     while (1) {
-	printf("입력 : ");
-	res = scanf("%d", &sel);
-	if (res != 1)
-	{
-	    printf("잘못입력하셨습니다.");
-	    myflush();
+		printf("입력 : ");
+		res = scanf("%d", &sel);
+		if (res != 1)
+		{
+			printf("잘못입력하셨습니다.");
+			myflush();
 
+		}
+		else if (sel < 1 || sel > 3)
+		{
+			printf("해당 문자의 범위안의 숫자를 입력하세요 \n ");
+		}
+		else
+			break;
 	}
-	else if (sel < 1 || sel > 3)
-	{
-	    printf("해당 문자의 범위안의 숫자를 입력하세요 \n ");
-	}
-	else
-	    break;
-    }
-    return sel;
+	return sel;
 }
 
 /*
@@ -214,7 +214,7 @@ void myflush()
 int register_sched()
 {
     char date[7];//날짜 6자리
-    int num_sub; // 과목갯수
+    int num_sub; // 과목 개수
     char name_sub[20]; // 과목이름
     char time[5];//과목 시간
 
@@ -231,7 +231,7 @@ int register_sched()
 
     while (1) {
 	system("clear"); // 리눅스의 경우 clear 로 변경.
-	printf("과목의 갯수를 입력하세요 : ");
+	printf("과목의 개수를 입력하세요 : ");
 	res = scanf("%d", &num_sub);
 	if (res == 1) break;
     }
@@ -246,49 +246,49 @@ int register_sched()
 	return 0;
 
     int i;
-    for (i = 0; i < num_sub; i++)
-    {
-	fprintf(fp, "%6s ", date);
-	system("clear"); // 리눅스의 경우 clear 로 변경.
-	printf("%d . 과목이름 : ", i + 1);
-	res = scanf("%s", name_sub);
-	myflush();
-	while (res != 1 || strlen(name_sub) > 19) {
+	for (i = 0; i < num_sub; i++)
+	{
+		fprintf(fp, "%6s ", date);
+		system("clear"); // 리눅스의 경우 clear 로 변경.
+		printf("%d . 과목이름 : ", i + 1);
+		res = scanf("%s", name_sub);
+		myflush();
+		while (res != 1 || strlen(name_sub) > 19) {
 
-	    printf("잘못 입력하셨습니다. 다시 입력해주세요. \n");
-	    myflush();
-	    res = scanf("%s", name_sub);
+			printf("잘못 입력하셨습니다. 다시 입력해주세요. \n");
+			myflush();
+			res = scanf("%s", name_sub);
+		}
+		while (1) {
+			printf("과목시간을 다음 예 처럼 입력하세요  ex. 7시15분 -> 0715 \n 입력 : ");
+			res = scanf("%s", time);
+			if (res == 1 && strlen(time) == 4) break;
+			myflush();
+		}
+		fprintf(fp, "%s %4s", name_sub, time);
+		fprintf(fp, "\n");
 	}
-	while (1) {
-	    printf("과목시간을 다음 예 처럼 입력하세요  ex. 7시15분 -> 0715 \n 입력 : ");
-	    res = scanf("%s", time);
-	    if (res == 1 && strlen(time) == 4) break;
-	    myflush();
-	}
-	fprintf(fp, "%s %4s", name_sub, time);
-	fprintf(fp, "\n");
-    }
-    fclose(fp);
+	fclose(fp);
 
-    schedule tmp_sched[10000];
-    schedule tmp;
-    int count = 0;
+	schedule tmp_sched[10000];
+	schedule tmp;
+	int count = 0;
 
-    if ((fp = fopen("schedule_info.txt", "r+")) == NULL)
-	printf("파일오류\n");
+	if ((fp = fopen("schedule_info.txt", "r+")) == NULL)
+		printf("파일오류\n");
 
-    i = 0;
-    while (fscanf(fp, "%6s%s%4s", tmp_sched[i].date, tmp_sched[i].name_sub, tmp_sched[i].time) == 3)
-	i++;
-    count = i;
-    re_align(tmp_sched, count);
+	i = 0;
+	while (fscanf(fp, "%6s%s%4s", tmp_sched[i].date, tmp_sched[i].name_sub, tmp_sched[i].time) == 3)
+		i++;
+	count = i;
+	re_align(tmp_sched, count);
 
-    rewind(fp);
-    for (i = 0; i < count; i++)
-	fprintf(fp, "%6s %s %4s\n", tmp_sched[i].date, tmp_sched[i].name_sub,tmp_sched[i].time);
-    fclose(fp);
+	rewind(fp);
+	for (i = 0; i < count; i++)
+		fprintf(fp, "%6s %s %4s\n", tmp_sched[i].date, tmp_sched[i].name_sub,tmp_sched[i].time);
+	fclose(fp);
 
-    return 1;
+	return 1;
 }
 
 /*
@@ -303,42 +303,41 @@ void check_sched()
     int i = 0;
     FILE *fp;
 
-    if ((fp = fopen("schedule_info.txt", "r")) == NULL)
-	printf("파일오류\n");
+	if ((fp = fopen("schedule_info.txt", "r")) == NULL)
+		printf("파일오류\n");
 
-    while (fscanf(fp, "%6s%s%4s", tmp_sched[i].date, tmp_sched[i].name_sub, tmp_sched[i].time) == 3)
-    {
-	i++;
-    }
-    count = i;
-    // txt_read(tmp_sched);
-    re_align(tmp_sched, count);
-    system("clear");
-    printf("------------------------------전체일정--------------------------------\n");
-    printf("    날짜    |   과목이름   |    시간    \n");
-    char tmp_date[10];
-    strcpy(tmp_date, "000000");
-    for (i = 0; i < count; i++)
-    {
-	if (strcmp(tmp_date, tmp_sched[i].date) != 0)
+	while (fscanf(fp, "%6s%s%4s", tmp_sched[i].date, tmp_sched[i].name_sub, tmp_sched[i].time) == 3)
 	{
-	    printf("\n");
-	    strcpy(tmp_date, tmp_sched[i].date);
-	    printf("%10s|%10s|%10s\n", tmp_sched[i].date, tmp_sched[i].name_sub, tmp_sched[i].time);
+		i++;
 	}
-	else
-	    printf("           %10s|%10s\n", tmp_sched[i].name_sub, tmp_sched[i].time);
+	count = i;
+	// txt_read(tmp_sched);
+	re_align(tmp_sched, count);
+	system("clear");
+	printf("------------------------------전체일정--------------------------------\n");
+	printf("    날짜    |   과목이름   |    시간    \n");
+	char tmp_date[10];
+	strcpy(tmp_date, "000000");
+	for (i = 0; i < count; i++)
+	{
+		if (strcmp(tmp_date, tmp_sched[i].date) != 0)
+		{
+			printf("\n");
+			strcpy(tmp_date, tmp_sched[i].date);
+			printf("%10s|%10s|%10s\n", tmp_sched[i].date, tmp_sched[i].name_sub, tmp_sched[i].time);
+		}
+		else
+			printf("           %10s|%10s\n", tmp_sched[i].name_sub, tmp_sched[i].time);
 
 
-    }
-    printf("-----------------------------------------------------------------------\n");
+	}
+	printf("-----------------------------------------------------------------------\n");
 
 
-    myflush();
-    printf("아무 버튼이나 누르세요\n");
-    getch();
-    //system("pause");
-    return;
+	myflush();
+	printf("아무 버튼이나 누르세요\n");
+	getch();
+	return;
 }
 
 /*
@@ -350,20 +349,20 @@ return :  전체 스케줄 수 , 실패시 -1  반환.
 int txt_read(schedule *a)
 {
     int count = 0;
-    FILE *fp;
+	FILE *fp;
 
-    if ((fp = fopen("schedule_info.txt", "r")) == NULL)
-    {
-	printf("파일오류\n");
-	return -1;
-    }
+	if ((fp = fopen("schedule_info.txt", "r")) == NULL)
+	{
+		printf("파일오류\n");
+		return -1;
+	}
 
-    while (fscanf(fp, "%6s%s%4s", a[count].date, a[count].name_sub, a[count].time) == 3)
-    {
-	count++;
-    }
-    fclose(fp);
-    return count;
+	while (fscanf(fp, "%6s%s%4s", a[count].date, a[count].name_sub, a[count].time) == 3)
+	{
+		count++;
+	}
+	fclose(fp);
+	return count;
 }
 
 
@@ -404,30 +403,30 @@ int txt_write(schedule *a, int n)
    */
 void re_align(schedule *a, int n)
 {
-    schedule tmp;
-    int i, j;
-    for (i = 0; i < n; i++)
-    {
-	for (j = i + 1; j < n; j++)
-	    if (strcmp(a[i].date, a[j].date) > 0) //date 별로 정리.
-	    {
-		memcpy(&tmp, &a[i], sizeof(schedule));
-		memcpy(&a[i], &a[j], sizeof(schedule));
-		memcpy(&a[j], &tmp, sizeof(schedule));
-	    }
+	schedule tmp;
+	int i, j;
+	for (i = 0; i < n; i++)
+	{
+		for (j = i + 1; j < n; j++)
+			if (strcmp(a[i].date, a[j].date) > 0) //date 별로 정리.
+			{
+				memcpy(&tmp, &a[i], sizeof(schedule));
+				memcpy(&a[i], &a[j], sizeof(schedule));
+				memcpy(&a[j], &tmp, sizeof(schedule));
+			}
 
-    }
+	}
 
-    for (i = 0; i < n; i++)
-    {
-	for (j = i + 1; !strcmp(a[i].date, a[j].date); j++)
-	    if (strcmp(a[i].time, a[j].time) > 0)
-	    {
-		memcpy(&tmp, &a[i], sizeof(schedule));
-		memcpy(&a[i], &a[j], sizeof(schedule));
-		memcpy(&a[j], &tmp, sizeof(schedule));
-	    }
-    }
+	for (i = 0; i < n; i++)
+	{
+		for (j = i + 1; !strcmp(a[i].date, a[j].date); j++)
+			if (strcmp(a[i].time, a[j].time) > 0)
+			{
+				memcpy(&tmp, &a[i], sizeof(schedule));
+				memcpy(&a[i], &a[j], sizeof(schedule));
+				memcpy(&a[j], &tmp, sizeof(schedule));
+			}
+	}
 }
 
 
@@ -449,45 +448,44 @@ void check_sched_date()
 
 
     while (1) {
-	system("clear"); // 리눅스의 경우 clear 로 변경.
-	printf("--------------------------------------------------------------\n");
-	printf("   찾으시려는 일정 날짜를 다음 예와 같이 입력해주세요 ! \n");
-	printf("입력 예 ex) 2017년 4월26일 -> 170426\n");
-	printf("날짜 입력 : ");
-	res = scanf("%s", find_date);
-	if (res == 1 && strlen(find_date) == 6) break;
-	myflush();
-    }
-
-    strcpy(tmp_date, "000000");
-
-    system("clear");
-    printf("------------------------------------------------------------------------\n");
-    for (i = 0; i < count; i++)
-    {
-	if (strcmp(find_date, tmp_sched[i].date) == 0) {
-	    if (strcmp(tmp_date, tmp_sched[i].date) != 0)
-	    {
-		printf("\n");
-		strcpy(tmp_date, tmp_sched[i].date);
-		printf("%10s|%10s|%10s\n", tmp_sched[i].date, tmp_sched[i].name_sub, tmp_sched[i].time);
-	    }
-	    else
-		printf("           %10s|%10s\n", tmp_sched[i].name_sub, tmp_sched[i].time);
-
+		system("clear"); // 리눅스의 경우 clear 로 변경.
+		printf("--------------------------------------------------------------\n");
+		printf("   찾으시려는 일정 날짜를 다음 예와 같이 입력해주세요 ! \n");
+		printf("입력 예 ex) 2017년 4월26일 -> 170426\n");
+		printf("날짜 입력 : ");
+		res = scanf("%s", find_date);
+		if (res == 1 && strlen(find_date) == 6) break;
+		myflush();
 	}
-    }
-    /*
-       char cur_sub[21]={0};
-       cur_subject(tmp_sched,count,cur_sub);
-       printf("현재 공부하고 있는 과목 : %s \n ",cur_sub);*/ // 현재 공부하고있는 과목 예시 
-    printf("-----------------------------------------------------------------------\n");
-    myflush();
-    printf("아무 버튼이나 누르세요\n");
-    getch();
 
-    // getchar();
-    return;
+	strcpy(tmp_date, "000000");
+
+	system("clear");
+	printf("------------------------------------------------------------------------\n");
+	for (i = 0; i < count; i++)
+	{
+		if (strcmp(find_date, tmp_sched[i].date) == 0) {
+			if (strcmp(tmp_date, tmp_sched[i].date) != 0)
+			{
+				printf("\n");
+				strcpy(tmp_date, tmp_sched[i].date);
+				printf("%10s|%10s|%10s\n", tmp_sched[i].date, tmp_sched[i].name_sub, tmp_sched[i].time);
+			}
+			else
+				printf("           %10s|%10s\n", tmp_sched[i].name_sub, tmp_sched[i].time);
+
+		}
+	}
+	/*
+	char cur_sub[21]={0};
+	cur_subject(tmp_sched,count,cur_sub);
+	printf("현재 공부하고 있는 과목 : %s \n ",cur_sub);*/ // 현재 공부하고있는 과목 예시 
+	printf("-----------------------------------------------------------------------\n");
+	myflush();
+	printf("아무 버튼이나 누르세요\n");
+	getch();
+
+	return;
 
 }
 
@@ -549,7 +547,6 @@ void delete_sched()
     else
     {
 	printf("찾으려는 날짜의 일정이 없습니다. 일정 등록으로 등록해주세요.\n");
-	//system("pause");
 	myflush();
 	printf("아무 버튼이나 누르세요\n");
 	getch();

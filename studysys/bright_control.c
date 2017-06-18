@@ -20,7 +20,6 @@ int select_bright_menu()
 		printf("                        1. 과목 조명 설정\n");
 		printf("                        2. 현재 조명 설정\n");
 		printf("                        3. 나가기\n");
-		printf("              4. get_min\n");
 		printf("-----------------------------------------------------------\n");
 		printf("입력  : ");
 		scanf("%d", &num);
@@ -37,9 +36,6 @@ int select_bright_menu()
 				break;
 			case 3:
 				return 0; 
-			case 4:
-				get_total_min();
-				break;
 
 			default: 
 				break;
@@ -91,7 +87,6 @@ int select_subject_to_change_bright()
 
 	int i = 0;
 	char buf[BUF_SIZE];
-	//while ((res = fscanf(bright_info_fp, "%s%d", &subject.name, subject.bright)) == 2)
 
 	system("clear");
 	printf("-----------------------------------------------------------\n");
@@ -106,12 +101,6 @@ int select_subject_to_change_bright()
 		i++;
 	}
 	fclose(bright_info_fp);
-
-	//    printf("2. Math : %d\n", );
-	//    printf("3. English : %d\n", );
-	//    printf("4. Science : %d\n", );
-	//    printf("5. History : %d\n", );
-
 
 	int num;
 	printf("-----------------------------------------------------------\n");
@@ -168,14 +157,6 @@ int change_subject_bright(int subject_no)
 
 		fprintf(bright_info_fp, "%-20s %03d\n", sub_str[i], new_bright);
 
-		//        sprintf(buf, "%s %d\n", sub_str[i], new_bright);
-		//
-		//        fprintf(bright_info_fp, "%s", buf);
-		//        int j;
-		//        for(j = 0; j < buf_len - strlen(buf); j++)
-		//            fputc('\0', bright_info_fp);
-
-
 		fclose(bright_info_fp);
 
 		printf("조명 변경 성공 \n");
@@ -200,7 +181,7 @@ int set_current_light_bright()
 		}
 	}
 	int light_pid;
-//	if ((light_pid = get_light_proc_pid()) < 0)
+
 	if ((light_pid = get_process_id("esp_lightWifiBu")) < 0)
 	{
 		fprintf(stderr , "There is NO light_process\n");
@@ -208,25 +189,23 @@ int set_current_light_bright()
 	}
 
 	char buf[20];
-//	while (1)
+
+	printf("현재 설정할 조명의 밝기를 입력하세요.\n");
+	scanf("%s", buf);
+
+	kill(light_pid, SIGUSR1);
+	FILE *fifo_fp;
+	if ((fifo_fp = fopen(FIFO_FILE, "w")) == NULL)
 	{
-		printf("현재 설정할 조명의 밝기를 입력하세요.\n");
-		scanf("%s", buf);
-
-		kill(light_pid, SIGUSR1);
-		FILE *fifo_fp;
-		if ((fifo_fp = fopen(FIFO_FILE, "w")) == NULL)
-		{
-			fprintf(stderr, "open error for %s\n", FIFO_FILE);
-			exit(1);
-		}
-
-//		if (strcmp(buf, "q") == 0 || strcmp(buf, "quit") == 0)
-//			break;
-		fprintf(fifo_fp, "%s", buf);
-		fclose(fifo_fp);
+		fprintf(stderr, "open error for %s\n", FIFO_FILE);
+		exit(1);
 	}
-	printf("Success\n");
+
+	fprintf(fifo_fp, "%s", buf);
+	fclose(fifo_fp);
+
+	printf("성공! ");
+	printf("아무 버튼이나 누르세요\n");
 	myflush();
 	getch();
 
@@ -276,8 +255,6 @@ int get_light_proc_pid(void)
 		strcat(path, dir_entry -> d_name);
 		strcat(path, "/cmdline");
 
-//		printf("path : %s\n",path);
-
 
 		int fd;
 		if ((fd = open(path, O_RDONLY)) < 0)
@@ -297,14 +274,12 @@ int get_light_proc_pid(void)
 				{
 					if (strcmp(buf, LIGHT_PROC_NAME) == 0)
 					{
-						//printf("\npid : %d\n", pid);
 						return pid;
 					}
 					else
 						break;
 
 				}
-				//                printf("argv[%d] : %s\n", argCount++, buf);
 				i = 0;    
 				argCount++;
 			}
@@ -392,7 +367,6 @@ int get_process_id(char *proc_name)
 		strcat(path, dir_entry -> d_name);
 		strcat(path, "/status");
 		
-//		printf("path : %s\n", path);
 
 		FILE *fp;
 		if ((fp = fopen(path, "r")) == NULL)

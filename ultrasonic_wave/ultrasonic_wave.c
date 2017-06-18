@@ -26,7 +26,6 @@
 #define echoPin 4
 
 int send_sigusr1_and_fifo(int pid, char *buf);
-//int get_light_proc_pid();
 void sigusr1_handler(int signo);
 int get_process_id(char *proc_name);
 
@@ -38,7 +37,6 @@ int total_sec;
 
 int main(void)
 {
-	printf("hi\n");
 	total_sec = 0;
 
 	signal(SIGUSR1, sigusr1_handler);
@@ -61,9 +59,8 @@ int main(void)
 		}
 	}
 
-//	int light_pid = get_light_proc_pid();
 	int light_pid = get_process_id("esp_lightWifiBu");
-	printf("light_pid : %d\n", light_pid);
+	func_syslog(LOG_DEBUG, "light_pid : %d\n", light_pid);
 
 	int distance = 0;
 	int pulse = 0;
@@ -99,13 +96,11 @@ int main(void)
 
 		if (distance < 80.0)
 		{
-	//		printf("Studying\n");
 			studying_arr[cnt] = 1;
 		}
 
 		else 
 		{
-	//		printf("NO\n");
 			studying_arr[cnt] = 0;
 		}
 
@@ -148,12 +143,12 @@ int main(void)
 
 					gettimeofday(&tv_end, NULL);
 					total_sec += (tv_end.tv_sec -tv_start.tv_sec);
-					printf("total_sec : %d\n", total_sec);
+					
+					func_syslog(LOG_DEBUG, "total_sec : %d\n", total_sec);
 				}
 				is_studying = 0;
 			}
 			cnt = 0;
-			//printf("is_studying : %d\n", is_studying);
 			continue;
 		}
 		cnt++;
@@ -166,12 +161,11 @@ int send_sigusr1_and_fifo(int pid, char *buf)
 {
 	if (kill(pid, SIGUSR1) != 0)
 	{
-		printf("Can't kill\n");
+		fprintf("Can't kill\n");
 	}
 	sleep(1);
 
 	FILE *fifo_fp;
-	printf("send sigusr1 & fifo\n");
 
 	if ((fifo_fp = fopen(FIFO_LIGHT, "w+")) == NULL)
 	{
@@ -182,101 +176,10 @@ int send_sigusr1_and_fifo(int pid, char *buf)
  	fprintf(fifo_fp, "%s", buf);
 
 	fclose(fifo_fp);
-	printf("after send sigusr1 & fifo\n");
-
-
-//	sleep(1);
-//	while (kill(pid, SIGUSR1) != 0)
-//	{
-//		printf("no kill signal\n");
-//		sleep(1);
-//	}
+	func_syslog(LOG_DEBUG, "after send sigusr1 & fifo\n");
 
 	return 0;
 }
-
-// Light 프로세스의 pid를 얻는 함수
-//int get_light_proc_pid(void)
-//{
-//	int pid;
-//	DIR *dirp;
-//	struct dirent *dir_entry;
-//
-//	char path[BUF_SIZE];
-//	strcpy(path, "/proc/");
-//
-//	if ((dirp = opendir(path)) == NULL)
-//	{
-//		fprintf(stderr, "opendir error for %s\n", path);
-//		return -1;
-//	}
-//
-//	int is_pid_dir;
-//	int i;
-//	char buf[BUF_SIZE];
-//	char tmp1[BUF_SIZE/2];
-//	char tmp2[BUF_SIZE/2];
-//
-//	// /proc 디릭터리 하위의 pid로 명명된 디렉터리들을 확인한다.
-//	while((dir_entry = readdir(dirp)) != NULL)
-//	{
-//		is_pid_dir = 1;
-//
-//		// 디렉터리의 이름이 모두 숫자로 이루어져있는지 확인한다.
-//		for (i = 0; i < (int) strlen(dir_entry -> d_name); i++)
-//		{
-//			if (!isdigit(dir_entry -> d_name[i]))
-//			{
-//				is_pid_dir = 0;
-//				break;
-//			}
-//		}
-//		if (!is_pid_dir)
-//			continue;
-//
-//		// /proc/[pid]/cmdline 파일에서 해당 프로세스의 이름을 확인한다.
-//		pid = atoi(dir_entry -> d_name);
-//
-//		strcat(path, dir_entry -> d_name);
-//		strcat(path, "/cmdline");
-//		
-//		//printf("path : %s\n",path);
-//
-//
-//		int fd;
-//		if ((fd = open(path, O_RDONLY)) < 0)
-//		{
-//			fprintf(stderr, "open error for %s\n", path);
-//			return -1;
-//		}
-//
-//		int argCount = 0;
-//		int ch;
-//		while(read(fd, &ch, 1) > 0)
-//		{
-//			buf[i++] = ch;
-//			if(ch == '\0')				// NULL로 argv를 구분하여 출력한다.
-//			{
-//				if (argCount == 1)
-//				{
-//					if (strcmp(buf, LIGHT_PROC_NAME) == 0)
-//					{
-//						//printf("\npid : %d\n", pid);
-//						return pid;
-//					}
-//					else
-//						break;
-//
-//				}
-////				printf("argv[%d] : %s\n", argCount++, buf);
-//				i = 0;	
-//				argCount++;
-//			}
-//		}
-//		strcpy(path, "/proc/");
-//	}
-//	return -1;
-//}
 
 void sigusr1_handler(int signo)
 {
@@ -341,8 +244,6 @@ int get_process_id(char *proc_name)
 		strcat(path, dir_entry -> d_name);
 		strcat(path, "/status");
 		
-//		printf("path : %s\n", path);
-
 		FILE *fp;
 		if ((fp = fopen(path, "r")) == NULL)
 		{
