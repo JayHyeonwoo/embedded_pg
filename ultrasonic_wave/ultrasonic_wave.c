@@ -161,7 +161,7 @@ int send_sigusr1_and_fifo(int pid, char *buf)
 {
 	if (kill(pid, SIGUSR1) != 0)
 	{
-		fprintf("Can't kill\n");
+		fprintf(stderr, "Can't kill\n");
 	}
 	sleep(1);
 
@@ -176,7 +176,7 @@ int send_sigusr1_and_fifo(int pid, char *buf)
  	fprintf(fifo_fp, "%s", buf);
 
 	fclose(fifo_fp);
-	func_syslog(LOG_DEBUG, "after send sigusr1 & fifo\n");
+	func_syslog(LOG_DEBUG, "after send sigusr1 & fifo\n", "");
 
 	return 0;
 }

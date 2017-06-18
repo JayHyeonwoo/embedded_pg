@@ -1,0 +1,5 @@
+ultrasonic_wave.o: ultrasonic_wave.c \
+ /home/pi/batman/embedded_pg/include/comm.h \
+ /home/pi/batman/embedded_pg/include/devinfo.h \
+ //home/pi/batman/embedded_pg/kernel/parsebat.h \
+ /home/pi/batman/embedded_pg/include/schedule.h
