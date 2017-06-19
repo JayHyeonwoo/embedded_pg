@@ -184,6 +184,13 @@ SYSCALL_DEFINE3(parsebat, int, fd, long, maxdev,
 		}
 		goto out;
 	}
+	getchar_from_fd(fd);
+	if (fd_err()) {
+		ndev = bufsize;
+		break;
+	} else if (fd_eof()) {
+		break;
+	}
 
 	/* 최대 maxdev만큼을 검색 */
 	while (ndev < maxdev) {
@@ -192,7 +199,6 @@ SYSCALL_DEFINE3(parsebat, int, fd, long, maxdev,
 			ndev = bufsize;
 			break;
 		} else if (fd_eof()) {
-			printk("err1\n");
 			ndev = -EINVAL;
 			break;
 		}
@@ -202,7 +208,6 @@ SYSCALL_DEFINE3(parsebat, int, fd, long, maxdev,
 			ndev = bufsize;
 			break;
 		} else if (fd_eof()) {
-			printk("err2\n");
 			ndev = -EINVAL;
 			break;
 		}
@@ -212,7 +217,6 @@ SYSCALL_DEFINE3(parsebat, int, fd, long, maxdev,
 			ndev = bufsize;
 			break;
 		} else if (fd_eof()) {
-			printk("err3\n");
 			ndev = -EINVAL;
 			break;
 		}
@@ -224,7 +228,6 @@ SYSCALL_DEFINE3(parsebat, int, fd, long, maxdev,
 				ndev = bufsize;
 				goto out;
 			} else if (fd_eof()) {
-				printk("err4\n");
 				ndev = -EINVAL;
 				goto out;
 			}

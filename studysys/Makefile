@@ -16,7 +16,7 @@ $(DEP): $(SRCS)
 	$(CC) -MM $(CPPFLAGS) $^ > $@
 
 clean:
-	$(RM) $(OBJS) $(TARGET) ../$(TARGET) $(DEP)
+	$(RM) *.o $(TARGET) ../$(TARGET) $(DEP)
 
 include $(DEP)
 

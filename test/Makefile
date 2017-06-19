@@ -12,7 +12,7 @@ $(DEP): $(SRCS)
 	$(CC) -MM $(CPPFLAGS) $^ > $@
 
 clean:
-	$(RM) $(OBJS) $(DEP) $(TARGETS) *.o
+	$(RM) *.o $(DEP) $(TARGETS) *.o
 
 include $(DEP)
 

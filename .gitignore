@@ -1,2 +1,5 @@
 *.o
 .*swp
+.dep
+study_system
+ultrasonic

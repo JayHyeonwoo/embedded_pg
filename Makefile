@@ -1,8 +1,7 @@
+KDIR ?=	/usr/src/linux-$(shell uname -r)
 PWD := $(shell pwd)
-KDIR ?=	/usr/src/linux
 CFLAGS := -W -Wall
-CPPFLAGS := -I$(PWD)/include -I/$(PWD)/kernel
-CROSS_COMPILE ?= 
+CPPFLAGS := -I$(PWD)/include -I$(PWD)/kernel
 
 CC := $(CROSS_COMPILE)gcc
 AR := $(CROSS_COMPILE)ar
@@ -17,13 +16,17 @@ else
 	CFLAGS += -O2
 endif
 
+ARCH ?= $(shell uname -m | sed -e 's/i.86/x86/g' -e 's/x86_64/x86/g' \
+		-e 's/arm.*/arm/g')
 ifeq ($(ARCH),arm)
-	CPPFLAGS += -DARM
-else
-	CPPFLAGS += -DX86
+	CPPFLAGS += -DCONFIG_ARM
 endif
 
-ifeq ($(CONFIG_ULTRAWAVE),y)
+ifeq ($(ARCH),x86)
+	CPPFLAGS += -DCONFIG_X86
+endif
+
+ifeq ($(CONFIG_ULTRASONIC),y)
 	CPPFLAGS += -DCONFIG_ULTRAWAVE
 endif
 

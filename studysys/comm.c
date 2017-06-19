@@ -124,7 +124,7 @@ void self_info(struct information *info)
 	info->index = self_index();
 	nsched = txt_read(scheds);
 	cur_subject(scheds, nsched, &info->subject_name);
-#ifdef CONFIG_ULTRAWAVE
+#ifdef CONFIG_ULTRASONIC
 	info->time = get_total_min();
 #else
 	info->time = 10;

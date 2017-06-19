@@ -8,10 +8,12 @@
 
 #include <devinfo.h>
 
-#ifdef ARM
+#ifdef CONFIG_ARM
 #define __NR_parsebat	397
-#else
+#elif CONFIG_X86
 #define __NR_parsebat	385
+#else
+#error "Architecture is not specified"
 #endif
 
 /*
