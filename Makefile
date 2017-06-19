@@ -1,4 +1,4 @@
-KDIR ?=	/usr/src/linux-$(shell uname -r)
+KDIR ?=	/usr/src/linux
 PWD := $(shell pwd)
 CFLAGS := -W -Wall
 CPPFLAGS := -I$(PWD)/include -I$(PWD)/kernel
