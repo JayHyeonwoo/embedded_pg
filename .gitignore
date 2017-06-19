@@ -1,5 +1,5 @@
 *.o
-.*swp
+.*.swp
 .dep
 study_system
 ultrasonic
